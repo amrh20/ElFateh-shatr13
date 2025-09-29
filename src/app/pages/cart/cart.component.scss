@@ -1226,3 +1226,45 @@
     transform: rotate(360deg);
   }
 }
+
+// Password Toggle Button Styles
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 3rem; // Space for the toggle button
+  }
+
+  .password-toggle-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    color: #6b7280;
+
+    &:hover {
+      color: #374151;
+      background-color: #f3f4f6;
+    }
+
+    &:focus {
+      outline: none;
+      color: #374151;
+      background-color: #f3f4f6;
+    }
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+}

@@ -77,6 +77,7 @@ export class HomeComponent implements OnInit {
   loadFeaturedProducts(): void {
     this.productService.getFeaturedProductsFromAPI().subscribe({
       next: (products) => {
+        console.log('Featured products:', products);
         this.featuredProducts = products;
       },
       error: (error) => {

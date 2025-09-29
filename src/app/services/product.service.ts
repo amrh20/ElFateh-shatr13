@@ -16,8 +16,10 @@ export class ProductService {
     {
       _id: '1',
       name: 'منظف أرضيات لافندر',
-      description: 'منظف أرضيات عالي الجودة برائحة اللافندر',
+      description: 'منظف أرضيات عالي الجودة برائحة اللافندر المنعشة',
       price: 45.99,
+      priceAfterDiscount: 32.99,
+      discountPercentage: 28,
       image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
       category: 'منظفات',
       brand: 'كلين برو',
@@ -45,7 +47,7 @@ export class ProductService {
     },
     {
       _id: '3',
-      name: 'طقم أواني طبخ',
+      name: 'طقم أواني طبخ ستانلس ستيل',
       description: 'طقم أواني طبخ من الستانلس ستيل عالي الجودة',
       price: 599.99,
       image: 'https://images.unsplash.com/photo-1556909114-fcd25c85cd64?w=400',
@@ -60,9 +62,11 @@ export class ProductService {
     },
     {
       _id: '4',
-      name: 'منظف زجاج',
+      name: 'منظف زجاج بدون آثار',
       description: 'منظف زجاج بدون آثار مع رائحة منعشة',
       price: 25.99,
+      priceAfterDiscount: 19.99,
+      discountPercentage: 23,
       image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
       category: 'منظفات',
       brand: 'كلين برو',
@@ -212,7 +216,6 @@ export class ProductService {
         return [];
       }),
       catchError((err) => {
-        console.error('Error loading products for subcategory:', subcategoryId, err);
         return of([]);
       })
     );
@@ -320,7 +323,6 @@ export class ProductService {
         };
       }),
       catchError((err) => {
-        console.error('Error loading products with filters:', err);
         // Return fallback data
         return of({
           success: true,
@@ -339,7 +341,6 @@ export class ProductService {
   getFeaturedProductsFromAPI(): Observable<Product[]> {
     return this.http.get<any>(`${environment.apiUrl}/products`).pipe(
       map(response => {
-        
         // Handle direct array response
         let products: Product[] = [];
         if (Array.isArray(response)) {
@@ -352,21 +353,24 @@ export class ProductService {
           }
         }
         
-        
         if (products.length > 0) {
           // Filter products where featured: true OR productType: "featured"
           const featuredProducts = products.filter((p: Product) => 
             p.featured === true || p.productType === 'featured'
           );
+          
+          // If no featured products found, use first few products as featured
+          if (featuredProducts.length === 0) {
+            return products.slice(0, 4);
+          }
+          
           return featuredProducts.slice(0, 4);
         }
-        
-        // Fallback to existing method if API structure is different
-        return this.fallbackProducts.filter(p => p.featured === true).slice(0, 4);
+        // Return empty array if no products from API
+        return [];
       }),
       catchError((error) => {
-        console.error('Error in getFeaturedProductsFromAPI:', error);
-        return of(this.fallbackProducts.filter(p => p.featured === true).slice(0, 4));
+        return of([]);
       })
     );
   }
@@ -397,12 +401,11 @@ export class ProductService {
           return bestSellerProducts.slice(0, 4);
         }
         
-        // Fallback to existing method if API structure is different
-        return this.fallbackProducts.filter(p => p.bestSeller === true).slice(0, 4);
+        // Return empty array if no products from API
+        return [];
       }),
       catchError((error) => {
-        console.error('Error in getBestSellersFromAPI:', error);
-        return of(this.fallbackProducts.filter(p => p.bestSeller === true).slice(0, 4));
+        return of([]);
       })
     );
   }
@@ -433,12 +436,11 @@ export class ProductService {
           return specialOfferProducts.slice(0, 4);
         }
         
-        // Fallback to existing method if API structure is different
-        return this.fallbackProducts.filter(p => p.specialOffer === true).slice(0, 4);
+        // Return empty array if no products from API
+        return [];
       }),
       catchError((error) => {
-        console.error('Error in getSpecialOfferProductsFromAPI:', error);
-        return of(this.fallbackProducts.filter(p => p.specialOffer === true).slice(0, 4));
+        return of([]);
       })
     );
   }
@@ -478,7 +480,6 @@ export class ProductService {
         return response;
       }),
       catchError((error) => {
-        console.error('Error testing API:', error);
         return of(null);
       })
     );

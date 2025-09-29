@@ -80,6 +80,9 @@ export class CartComponent implements OnInit {
     return this.authService.isAuthenticated();
   }
 
+  // Password visibility toggle
+  showPassword = false;
+
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
@@ -116,6 +119,11 @@ export class CartComponent implements OnInit {
       this.cartItems = items;
       this.calculateTotals();
     });
+
+    // Load user profile data if authenticated
+    if (this.authService.isAuthenticated()) {
+      this.loadUserProfile();
+    }
 
     // Reset form state to ensure no validation errors show initially
     this.resetFormState();
@@ -410,6 +418,13 @@ export class CartComponent implements OnInit {
   }
 
   nextStep(): void {
+    // Check if user is authenticated
+    if (!this.authService.isAuthenticated()) {
+      this.showAuthPopup = true;
+      this.isLoginMode = true;
+      return;
+    }
+
     if (this.currentStep < 2) {
       this.currentStep++;
       this.viewportScroller.scrollToPosition([0, 0]);
@@ -532,5 +547,27 @@ export class CartComponent implements OnInit {
     const egyptPhoneRegex = /^01[0-2,5][0-9]{8}$/;
     const isValid = emailRegex.test(value) || egyptPhoneRegex.test(value);
     return isValid ? null : { emailOrPhone: true };
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  loadUserProfile(): void {
+    this.authService.getMyProfile().subscribe({
+      next: (user) => {
+        if (user) {
+          // Fill checkout form with user data
+          this.checkoutForm.patchValue({
+            fullName: user.name || '',
+            mobileNumber: user.phone || (user as any).username || '',
+            // Keep other fields empty as they need to be entered by user
+          });
+        }
+      },
+      error: (error) => {
+        // Error loading profile - form remains empty
+      }
+    });
   }
 } 
