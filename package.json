@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build --configuration production --output-path dist/cloudflare --base-href /",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test", 
+    "redirects": "ng build --configuration production --output-path dist/cloudflare --base-href / && cp src/_redirects dist/cloudflare/"
+  
   },
   "private": true,
   "dependencies": {
