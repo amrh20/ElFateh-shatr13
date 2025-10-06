@@ -4,11 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production --output-path dist/cloudflare --base-href /",
+    "build": "ng build --configuration production",
+    "build:cloudflare": "ng build --configuration production && cp src/_redirects dist/el-fateh-13/browser/",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test", 
-    "redirects": "ng build --configuration production --output-path dist/cloudflare --base-href / && cp src/_redirects dist/cloudflare/"
-  
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
