@@ -277,12 +277,12 @@
             <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()" class="p-6 checkout-form">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Full Name -->
-                <div class="md:col-span-2">
+                <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     الاسم الكامل <span class="text-red-500">*</span>
                   </label>
                   <input type="text" formControlName="fullName" 
-                         [class]="'w-full px-4 py-3 border rounded-lg transition-all duration-200 ' + (isFieldInvalid('fullName') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
+                         [class]="'w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 ' + (isFieldInvalid('fullName') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
                          placeholder="أدخل اسمك الكامل">
                   <div *ngIf="isFieldInvalid('fullName')" 
                        class="error-message">
@@ -295,12 +295,69 @@
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     رقم الموبايل <span class="text-red-500">*</span>
                   </label>
-                  <input type="tel" formControlName="mobileNumber" 
-                         [class]="'w-full px-4 py-3 border rounded-lg transition-all duration-200 ' + (isFieldInvalid('mobileNumber') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
+                  <input type="text" formControlName="mobileNumber" 
+                         [class]="'w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 ' + (isFieldInvalid('mobileNumber') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
                          placeholder="أدخل رقم الموبايل">
                   <div *ngIf="isFieldInvalid('mobileNumber')" 
                        class="error-message">
                     رقم الموبايل مطلوب
+                  </div>
+                </div>
+
+                <!-- Address Options -->
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-3">
+                    اختيار العنوان
+                  </label>
+                  <div class="flex flex-row gap-3 mb-4">
+                    <label class="flex-1 flex items-center gap-3 cursor-pointer px-4 py-3 border-2 rounded-lg transition-all hover:border-red-300 hover:bg-red-50"
+                           [class.border-red-600]="!useExistingAddress"
+                           [class.bg-red-50]="!useExistingAddress"
+                           [class.border-gray-300]="useExistingAddress"
+                           [class.bg-white]="useExistingAddress">
+                      <input type="radio" 
+                             [checked]="!useExistingAddress"
+                             (change)="toggleAddressMode()"
+                             class="w-5 h-5 text-red-600 focus:ring-2 focus:ring-red-500 cursor-pointer">
+                      <span class="font-medium" [class.text-red-600]="!useExistingAddress" [class.text-gray-700]="useExistingAddress">
+                        عنوان جديد
+                      </span>
+                    </label>
+                    <label *ngIf="savedAddresses.length > 0" 
+                           class="flex-1 flex items-center gap-3 cursor-pointer px-4 py-3 border-2 rounded-lg transition-all hover:border-red-300 hover:bg-red-50"
+                           [class.border-red-600]="useExistingAddress"
+                           [class.bg-red-50]="useExistingAddress"
+                           [class.border-gray-300]="!useExistingAddress"
+                           [class.bg-white]="!useExistingAddress">
+                      <input type="radio" 
+                             [checked]="useExistingAddress"
+                             (change)="toggleAddressMode()"
+                             class="w-5 h-5 text-red-600 focus:ring-2 focus:ring-red-500 cursor-pointer">
+                      <span class="font-medium" [class.text-red-600]="useExistingAddress" [class.text-gray-700]="!useExistingAddress">
+                        استخدام عنوان محفوظ
+                      </span>
+                    </label>
+                  </div>
+
+                  <!-- Saved Addresses Dropdown -->
+                  <div *ngIf="useExistingAddress" class="mb-4">
+                    <div *ngIf="isLoadingAddresses" class="flex items-center justify-center py-4">
+                      <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+                      <span class="mr-2 text-gray-600">جاري تحميل العناوين...</span>
+                    </div>
+                    <select *ngIf="!isLoadingAddresses && savedAddresses.length > 0"
+                            [(ngModel)]="selectedAddressId" 
+                            (ngModelChange)="onAddressSelect()"
+                            [ngModelOptions]="{standalone: true}"
+                            class="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 bg-white cursor-pointer">
+                      <option value="">-- اختر عنوان --</option>
+                      <option *ngFor="let addr of savedAddresses" [value]="addr._id">
+                        {{ addr.address.city }} - {{ addr.address.street }} ({{ addr.phone }})
+                      </option>
+                    </select>
+                    <div *ngIf="!isLoadingAddresses && savedAddresses.length === 0" class="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                      لا توجد عناوين محفوظة. اختر "عنوان جديد" لإضافة عنوان.
+                    </div>
                   </div>
                 </div>
 
@@ -310,7 +367,7 @@
                     المنطقة <span class="text-red-500">*</span>
                   </label>
                   <select formControlName="city" 
-                         [class]="'w-full px-4 py-3 border rounded-lg transition-all duration-200 bg-white cursor-pointer appearance-none ' + (isFieldInvalid('city') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
+                         [class]="'w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 bg-white cursor-pointer appearance-none ' + (isFieldInvalid('city') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
                          style="background-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; fill=&quot;none&quot; viewBox=&quot;0 0 24 24&quot; stroke=&quot;%236b7280&quot;><path stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19 9l-7 7-7-7&quot;/></svg>'); background-repeat: no-repeat; background-position: left 12px center; background-size: 16px; padding-left: 40px;">
                     <option value="" disabled>اختر المنطقة</option>
                     <option *ngFor="let area of zahraaMaadiAreas" [value]="area">
@@ -329,7 +386,7 @@
                     عنوان التوصيل <span class="text-red-500">*</span>
                   </label>
                   <textarea formControlName="deliveryAddress" rows="3"
-                            [class]="'w-full px-4 py-3 border rounded-lg transition-all duration-200 ' + (isFieldInvalid('deliveryAddress') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
+                            [class]="'w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 ' + (isFieldInvalid('deliveryAddress') ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500' : 'border-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500')"
                             placeholder="أدخل العنوان بالتفصيل"></textarea>
                   <div *ngIf="isFieldInvalid('deliveryAddress')" 
                        class="error-message">
@@ -348,7 +405,7 @@
                     ملاحظات إضافية
                   </label>
                   <textarea formControlName="additionalNotes" rows="3"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
+                            class="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
                             placeholder="أي ملاحظات إضافية للتوصيل"></textarea>
                 </div>
               </div>

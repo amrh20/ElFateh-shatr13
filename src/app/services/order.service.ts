@@ -97,8 +97,9 @@ export class OrderService {
 
   getOrderStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
-      'pending': 'في انتظار التأكيد',
-      'confirmed': 'تم التأكيد',
+      'pending': 'تم استلام الطلب',
+      'confirmed': 'مؤكد',
+      'processing': 'قيد المعالجة',
       'shipped': 'تم الشحن',
       'delivered': 'تم التوصيل',
       'cancelled': 'ملغي'
@@ -108,9 +109,10 @@ export class OrderService {
 
   getOrderStatusColor(status: string): string {
     const colorMap: { [key: string]: string } = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'confirmed': 'bg-blue-100 text-blue-800',
-      'shipped': 'bg-purple-100 text-purple-800',
+      'pending': 'bg-gray-100 text-gray-800',
+      'confirmed': 'bg-yellow-100 text-yellow-800',
+      'processing': 'bg-orange-100 text-orange-800',
+      'shipped': 'bg-blue-100 text-blue-800',
       'delivered': 'bg-green-100 text-green-800',
       'cancelled': 'bg-red-100 text-red-800'
     };

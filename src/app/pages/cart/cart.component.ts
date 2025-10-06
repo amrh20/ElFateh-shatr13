@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth.service';
+import { AddressService, Address } from '../../services/address.service';
 import { CartItem } from '../../models/product.model';
 import { environment } from '../../../environments/environment';
 
@@ -75,6 +76,12 @@ export class CartComponent implements OnInit {
     'حي النرجس'
   ];
 
+  // Address Management
+  useExistingAddress: boolean = false;
+  savedAddresses: Address[] = [];
+  selectedAddressId: string = '';
+  isLoadingAddresses: boolean = false;
+
   // Getter for auth service access in template
   get isUserAuthenticated(): boolean {
     return this.authService.isAuthenticated();
@@ -87,6 +94,7 @@ export class CartComponent implements OnInit {
     private cartService: CartService,
     private orderService: OrderService,
     private authService: AuthService,
+    private addressService: AddressService,
     private router: Router,
     private viewportScroller: ViewportScroller,
     private fb: FormBuilder,
@@ -123,6 +131,7 @@ export class CartComponent implements OnInit {
     // Load user profile data if authenticated
     if (this.authService.isAuthenticated()) {
       this.loadUserProfile();
+      this.loadSavedAddresses();
     }
 
     // Reset form state to ensure no validation errors show initially
@@ -251,10 +260,13 @@ export class CartComponent implements OnInit {
     this.cartService.removeFromCart(productId);
   }
 
-  submitOrder(): void {
+  async submitOrder(): Promise<void> {
     if (this.checkoutForm.invalid) return;
 
     this.isSubmitting = true;
+
+    // Save new address if needed
+    await this.saveNewAddressIfNeeded();
 
     // Create order object to match Swagger API schema
     const formData = this.checkoutForm.value;
@@ -281,9 +293,10 @@ export class CartComponent implements OnInit {
     // Call the real API
     this.orderService.createOrder(order).subscribe({
       next: (response) => {
+        console.log('Order response:', response);
         
         // Check if order was successful
-        if (response && (response.details.error.success === true || (!response.details.error&& !response.details.error.message))) {
+        if (response && response.success) {
           // Save order details before clearing cart
           this.savedOrderDetails = {
             totalItems: this.totalItems,
@@ -302,13 +315,14 @@ export class CartComponent implements OnInit {
           this.isSubmitting = false;
         } else {
           // Handle API error
+          console.error('Order failed:', response);
           
           // Check if it's a discount code error (invalid or already used)
-          if (response.details.error.message && 
-              (response.details.error.message.includes('Invalid discount code') || 
-               response.details.error.message.includes('Discount code already used') ||
-               response.details.error.message.includes('already used by this user'))) {
-            this.handleInvalidDiscountCode(response.details.error.message);
+          if (response?.error?.message && 
+              (response.error.message.includes('Invalid discount code') || 
+               response.error.message.includes('Discount code already used') ||
+               response.error.message.includes('already used by this user'))) {
+            this.handleInvalidDiscountCode(response.error.message);
           } else {
             alert('حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى');
             this.isSubmitting = false;
@@ -557,10 +571,11 @@ export class CartComponent implements OnInit {
     this.authService.getMyProfile().subscribe({
       next: (user) => {
         if (user) {
+          console.log('User profile:', user,(user as any).username);
           // Fill checkout form with user data
           this.checkoutForm.patchValue({
             fullName: user.name || '',
-            mobileNumber: user.phone || (user as any).username || '',
+            mobileNumber: user.phone || (user as any).username || user.email || '',
             // Keep other fields empty as they need to be entered by user
           });
         }
@@ -568,6 +583,87 @@ export class CartComponent implements OnInit {
       error: (error) => {
         // Error loading profile - form remains empty
       }
+    });
+  }
+
+  // Address Management Methods
+  loadSavedAddresses(): void {
+    this.isLoadingAddresses = true;
+    this.addressService.getUserAddresses().subscribe({
+      next: (res) => {
+        if (res && res.success && res.data) {
+          this.savedAddresses = res.data;
+        }
+        this.isLoadingAddresses = false;
+      },
+      error: () => {
+        this.isLoadingAddresses = false;
+      }
+    });
+  }
+
+  toggleAddressMode(): void {
+    this.useExistingAddress = !this.useExistingAddress;
+    if (!this.useExistingAddress) {
+      // Clear selection and form when switching to new address
+      this.selectedAddressId = '';
+      this.checkoutForm.patchValue({
+        deliveryAddress: '',
+        city: ''
+      });
+      // Re-load user profile to restore name and phone
+      this.loadUserProfile();
+    } else {
+      // Clear form when switching to existing address
+      this.checkoutForm.patchValue({
+        deliveryAddress: '',
+        city: ''
+      });
+    }
+  }
+
+  onAddressSelect(): void {
+    const selectedAddress = this.savedAddresses.find(addr => addr._id === this.selectedAddressId);
+    if (selectedAddress) {
+      // Patch form with selected address
+      this.checkoutForm.patchValue({
+        mobileNumber: selectedAddress.phone,
+        deliveryAddress: selectedAddress.address.street,
+        city: selectedAddress.address.city
+      });
+    }
+  }
+
+  async saveNewAddressIfNeeded(): Promise<boolean> {
+    // If using existing address, no need to save
+    if (this.useExistingAddress) {
+      return true;
+    }
+
+    // Check if this is a new address that needs to be saved
+    const formData = this.checkoutForm.value;
+    const newAddress: Address = {
+      phone: formData.mobileNumber,
+      address: {
+        street: formData.deliveryAddress,
+        city: formData.city
+      }
+    };
+
+    return new Promise((resolve) => {
+      this.addressService.createAddress(newAddress).subscribe({
+        next: (res) => {
+          if (res && res.success) {
+            console.log('Address saved successfully');
+            resolve(true);
+          } else {
+            resolve(true); // Continue with order even if address save fails
+          }
+        },
+        error: () => {
+          resolve(true); // Continue with order even if address save fails
+        }
+      });
     });
   }
 } 

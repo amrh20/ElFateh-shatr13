@@ -18,40 +18,73 @@
     </div>
   </section>
   
-  <!-- Current Order Section -->
-  <section *ngIf="currentOrder" class="py-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+  <!-- Current Order Section - Compact -->
+  <section *ngIf="currentOrder" class="current-order-section">
     <div class="container mx-auto px-4">
-      <!-- <div class="bg-white rounded-xl shadow-md p-4 border border-blue-100">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4 space-x-reverse">
-            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="current-order-card">
+        <div class="order-card-content">
+          
+          <!-- Right Side: Order Info -->
+          <div class="order-info">
+            <div class="order-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
-            <div>
-              <h3 class="font-semibold text-gray-900">طلبك الحالي</h3>
-              <p class="text-sm text-gray-600">{{ currentOrder.items.length }} منتج - {{ currentOrder.totalAmount.toFixed(2) }} ج.م</p>
+            <div class="order-details">
+              <h3 class="order-title">طلبك الحالي</h3>
+              <p class="order-number">{{ currentOrder.id }}</p>
             </div>
           </div>
-  
-          <div class="flex items-center space-x-4 space-x-reverse">
-            <span [class]="'px-3 py-1 rounded-full text-xs font-medium ' + orderService.getOrderStatusColor(currentOrder.status)">
-              {{ orderService.getOrderStatusText(currentOrder.status) }}
-            </span>
-            <a routerLink="/track-order" 
-               class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
-              تتبع الطلب
-            </a>
+
+          <!-- Center: Status & Price -->
+          <div class="order-status-price">
+            <!-- Status Badge -->
+            <div class="status-wrapper">
+              <p class="status-label">الحالة</p>
+              <div class="status-content">
+                <span [class]="'status-badge ' + orderService.getOrderStatusColor(currentOrder.status)">
+                  {{ orderService.getOrderStatusText(currentOrder.status) }}
+                </span>
+                <button 
+                  (click)="refreshCurrentOrder()" 
+                  class="refresh-btn"
+                  title="تحديث حالة الطلب">
+                  <svg class="refresh-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="divider"></div>
+            
+            <!-- Price -->
+            <div class="price-wrapper">
+              <p class="price-label">الإجمالي</p>
+              <p class="price-amount">{{ currentOrder.totalAmount }} <span class="currency">ج.م</span></p>
+            </div>
           </div>
+
+          <!-- Left Side: Track Button -->
+          <a 
+            [routerLink]="['/track-order']" 
+            [queryParams]="{ orderId: currentOrder.id }"
+            class="track-order-btn">
+            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+            <span>تتبع الطلب</span>
+          </a>
         </div>
-      </div> -->
+      </div>
     </div>
   </section>
   
       <!-- Categories Section -->
-      <section class="py-20 bg-white" *ngIf="(categories?.length || 0) > 0">
-        <div class="container mx-auto px-4">
+      <section class="" *ngIf="(categories?.length || 0) > 0">
+        <div class="container mx-auto px-4 mt-5">
           <!-- Simple Clean Header -->
           <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
@@ -92,7 +125,7 @@
                     
                     <!-- Enhanced Product Count Badge -->
                     <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full shadow-lg backdrop-blur-sm category-badge">
-                      <span class="text-sm font-bold">{{ category.subcategories.length || 0 }} منتج</span>
+                      <span class="text-sm font-bold">{{ category.subcategories.length || 0 }} صنف</span>
                     </div>
                     
                     <!-- Hover Overlay -->

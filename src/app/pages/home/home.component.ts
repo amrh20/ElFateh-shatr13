@@ -112,15 +112,63 @@ export class HomeComponent implements OnInit {
   }
 
   loadCurrentOrder(): void {
-    this.orderService.getCurrentOrder().subscribe({
-      next: (order) => {
-        this.currentOrder = order;
+    this.orderService.getUserOrders().subscribe({
+      next: (res) => {
+        if (res && res.success && res.data && res.data.length > 0) {
+          // Find the first active order (not delivered or cancelled)
+          const activeOrder = res.data.find((order: any) => 
+            ['pending', 'confirmed', 'processing', 'shipped'].includes(order.status)
+          );
+          
+          if (activeOrder) {
+            // Map the API response to our Order model
+            this.currentOrder = {
+              id: activeOrder.orderNumber,
+              userId: activeOrder.user,
+              items: activeOrder.items.map((item: any) => ({
+                product: {
+                  _id: item.product._id,
+                  name: item.product.name,
+                  description: item.product.description || '',
+                  price: item.product.price,
+                  image: item.product.images && item.product.images.length > 0 
+                    ? item.product.images[0] 
+                    : 'assets/images/placeholder.jpg',
+                  category: item.product.category || '',
+                  brand: item.product.brand || '',
+                  stock: item.product.stock || 0,
+                  rating: item.product.rating || 0,
+                  reviews: item.product.reviews || 0,
+                  isOnSale: item.product.isOnSale || false,
+                  images: item.product.images || []
+                },
+                quantity: item.quantity
+              })),
+              totalAmount: activeOrder.totalAmount,
+              status: activeOrder.status,
+              orderDate: new Date(activeOrder.createdAt),
+              deliveryDate: activeOrder.updatedAt ? new Date(activeOrder.updatedAt) : undefined,
+              deliveryAddress: `${activeOrder.customerInfo?.address?.street || ''}, ${activeOrder.customerInfo?.address?.city || ''}`,
+              paymentMethod: 'cash',
+              trackingNumber: activeOrder.orderNumber
+            };
+          } else {
+            this.currentOrder = null;
+          }
+        } else {
+          this.currentOrder = null;
+        }
       },
       error: (error) => {
         console.error('Error loading current order:', error);
-        // Don't show error for this as it's not critical
+        this.currentOrder = null;
       }
     });
+  }
+
+  refreshCurrentOrder(): void {
+    this.notificationService.success('جاري التحديث', 'جاري تحديث حالة الطلب...');
+    this.loadCurrentOrder();
   }
 
   loadStorageInfo(): void {
