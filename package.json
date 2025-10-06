@@ -4,8 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production",
-    "build:cloudflare": "ng build --configuration production && cp src/_redirects dist/el-fateh-13/browser/",
+    "build": "ng build --configuration production --output-path dist/cloudflare",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
