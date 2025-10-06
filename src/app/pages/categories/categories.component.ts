@@ -72,9 +72,7 @@ export class CategoriesComponent implements OnInit {
         console.error('Error loading categories:', err);
         this.error = 'Error loading categories. Please try again.';
         this.loading = false;
-        
-        // Fallback to mock data if API fails
-        this.loadMockCategories();
+        this.categories = [];
       }
     });
   }
@@ -144,41 +142,6 @@ export class CategoriesComponent implements OnInit {
     });
   }
 
-  loadMockCategories(): void {
-    // Fallback mock data structure matching the API response
-    this.categories = [
-      {
-        _id: '1',
-        name: 'منظفات',
-        description: 'منتجات تنظيف عالية الجودة',
-        image: 'assets/images/cleaners.jpg',
-        isActive: true,
-        parent: null,
-        ancestors: [],
-        subcategories: ['1', '2', '3', '4', '5']
-      },
-      {
-        _id: '2',
-        name: 'أدوات منزلية',
-        description: 'أدوات منزلية متنوعة',
-        image: 'assets/images/home-tools.jpg',
-        isActive: true,
-        parent: null,
-        ancestors: [],
-        subcategories: ['6', '7', '8', '9']
-      },
-      {
-        _id: '3',
-        name: 'منتجات العناية',
-        description: 'منتجات العناية الشخصية',
-        image: 'assets/images/care-products.jpg',
-        isActive: true,
-        parent: null,
-        ancestors: [],
-        subcategories: ['10', '11', '12']
-      }
-    ];
-  }
 
   autoSelectFirstSubcategory(): void {
     // Don't auto-select anything - let user choose manually

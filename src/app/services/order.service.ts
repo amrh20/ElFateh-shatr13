@@ -27,59 +27,8 @@ export class OrderService {
   }
 
   getCurrentOrder(): Observable<Order | null> {
-    // TODO: Replace with actual API call
-    // For now, return mock data
-    const mockOrder: Order = {
-      id: 'ORD-2024-001',
-      userId: 1,
-      items: [
-        {
-          product: {
-            _id: 1,
-            name: 'منظف أرضيات لافندر',
-            description: 'منظف أرضيات برائحة اللافندر',
-            price: 45.99,
-            image: 'https://via.placeholder.com/150',
-            category: 'منظفات',
-            brand: 'فيري',
-            stock: 10,
-            rating: 4.5,
-            reviews: 128,
-            isOnSale: false,
-            images: ['https://via.placeholder.com/150']
-          },
-          quantity: 2
-        },
-        {
-          product: {
-            _id: 2,
-            name: 'إسفنجة أطباق',
-            description: 'إسفنجة أطباق عالية الجودة',
-            price: 12.99,
-            image: 'https://via.placeholder.com/150',
-            category: 'أدوات مطبخ',
-            brand: 'سكوتش',
-            stock: 10,
-            rating: 4.2,
-            reviews: 89,
-            isOnSale: true,
-            discountPercentage: 15,
-            images: ['https://via.placeholder.com/150']
-          },
-          quantity: 3
-        }
-      ],
-      totalAmount: 123.95,
-      status: 'confirmed',
-      orderDate: new Date('2024-01-15T10:30:00'),
-      deliveryDate: new Date('2024-01-17T14:00:00'),
-      deliveryAddress: 'شارع النيل، المعادي، القاهرة',
-      paymentMethod: 'cash',
-      trackingNumber: 'TRK-2024-001'
-    };
-
-    // Simulate API delay
-    return of(mockOrder);
+    // This method is replaced by getUserOrders() which calls the real API
+    return of(null);
   }
 
   hasActiveOrder(): Observable<boolean> {
