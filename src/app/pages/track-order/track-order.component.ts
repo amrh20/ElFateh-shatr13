@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/order.service';
+import { NotificationService } from '../../services/notification.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -17,8 +18,13 @@ export class TrackOrderComponent implements OnInit {
   searched: boolean = false;
   userOrders: any[] = [];
   trackingSteps: any[] = [];
+  isRefreshing: boolean = false;
 
-  constructor(private route: ActivatedRoute, private orderService: OrderService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private orderService: OrderService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     // Check for orderId in query params
@@ -63,9 +69,12 @@ export class TrackOrderComponent implements OnInit {
   refreshOrderStatus(): void {
     if (!this.order || !this.order.id) return;
     
+    this.isRefreshing = true;
+    
     // Reload user orders from API
     this.orderService.getUserOrders().subscribe({
       next: (res) => {
+        this.isRefreshing = false;
         if (res && res.success && res.data) {
           this.userOrders = res.data;
           
@@ -73,12 +82,47 @@ export class TrackOrderComponent implements OnInit {
           const updatedOrder = this.userOrders.find(o => o.orderNumber === this.order!.id);
           
           if (updatedOrder) {
+            const oldStatus = this.order.status;
             this.mapOrderData(updatedOrder);
+            
+            // Show success notification
+            this.notificationService.showSuccess(
+              'تم تحديث حالة الطلب بنجاح', 
+              { duration: 3000 }
+            );
+            
+            // Check if status actually changed
+            if (oldStatus !== updatedOrder.status) {
+              this.notificationService.info(
+                'تحديث حالة الطلب',
+                `تغيرت حالة الطلب من "${this.getStatusText(oldStatus)}" إلى "${this.getStatusText(updatedOrder.status)}"`,
+                { duration: 5000 }
+              );
+            }
+            
+            console.log('Order status updated successfully');
+          } else {
+            console.warn('Order not found after refresh');
+            this.notificationService.showError(
+              'لم يتم العثور على الطلب بعد التحديث',
+              { duration: 4000 }
+            );
           }
+        } else {
+          console.error('Failed to fetch updated orders');
+          this.notificationService.showError(
+            'فشل في تحديث حالة الطلب. حاول مرة أخرى',
+            { duration: 4000 }
+          );
         }
       },
       error: (error) => {
+        this.isRefreshing = false;
         console.error('Error refreshing order status:', error);
+        this.notificationService.showError(
+          'حدث خطأ أثناء تحديث حالة الطلب. تحقق من اتصالك بالإنترنت',
+          { duration: 4000 }
+        );
       }
     });
   }

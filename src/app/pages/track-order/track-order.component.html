@@ -120,12 +120,14 @@
           </div>
           <div class="mt-4 md:mt-0 flex items-center gap-2">
             <span [class]="getStatusClass(order.status)" class="px-4 py-2 rounded-full text-sm font-medium">
-              {{ getStatusText(order.status) }}
+              {{ isRefreshing ? 'جاري التحديث...' : getStatusText(order.status) }}
             </span>
             <button 
               (click)="refreshOrderStatus()" 
-              class="text-blue-600 hover:text-blue-700 hover:rotate-180 transition-all duration-500 p-2"
-              title="تحديث حالة الطلب">
+              [disabled]="isRefreshing"
+              class="text-blue-600 hover:text-blue-700 hover:scale-110 transition-all duration-300 p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full hover:bg-blue-50"
+              [class.animate-spin]="isRefreshing"
+              title="{{ isRefreshing ? 'جاري التحديث...' : 'تحديث حالة الطلب' }}">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
               </svg>
