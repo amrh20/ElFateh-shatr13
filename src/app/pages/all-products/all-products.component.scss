@@ -191,24 +191,7 @@
   }
 }
 
-// Responsive grid adjustments
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1025px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
+// Responsive grid adjustments - Removed to allow Tailwind classes to work
 
 // Sticky header shadow effect
 .sticky {
@@ -292,50 +275,9 @@ button:hover:not(:disabled) {
   }
 }
 
-// Product grid gap adjustments
-@media (max-width: 640px) {
-  .grid {
-    gap: 1rem;
-  }
-}
+// Product grid gap adjustments - Removed to allow Tailwind classes to work
 
-@media (min-width: 641px) {
-  .grid {
-    gap: 2rem;
-  }
-}
-
-// Products grid responsive improvements
-@media (max-width: 1024px) {
-  .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-  }
-  
-  .py-12 {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .py-12 {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-  }
-}
+// Products grid responsive improvements - Removed to allow Tailwind classes to work
 
 // Pagination responsive improvements
 @media (max-width: 768px) {
