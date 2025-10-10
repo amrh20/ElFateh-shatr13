@@ -1,76 +1,99 @@
-<div class="bg-gray-50 min-h-screen py-8">
-  <div class="container mx-auto px-4">
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">تتبع الطلب</h1>
+<div class="bg-gray-50 min-h-screen py-4 sm:py-6 lg:py-8">
+  <div class="container mx-auto px-3 sm:px-4">
+    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 lg:mb-8">تتبع الطلب</h1>
 
     <!-- Search Section -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">البحث عن طلب</h2>
-      <div class="flex flex-col md:flex-row gap-4">
+    <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
+      <h2 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">البحث عن طلب</h2>
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <input type="text"
                [(ngModel)]="searchOrderId"
                placeholder="أدخل رقم الطلب..."
-               class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+               class="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
         <button (click)="searchOrder()"
                 [disabled]="!searchOrderId"
-                class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                class="bg-red-600 text-white px-5 sm:px-6 py-2 text-sm sm:text-base rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
           بحث
         </button>
       </div>
     </div>
 
-    <!-- All User Orders List -->
-    <div *ngIf="!order && userOrders.length > 0" class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">طلباتك</h2>
-      <div class="space-y-4">
-        <div *ngFor="let userOrder of userOrders" 
+    <!-- Tabs Section -->
+    <div *ngIf="!order && userOrders.length > 0" class="mb-4 sm:mb-6">
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="flex flex-col sm:flex-row border-b border-gray-200">
+          <button (click)="activeOrderTab = 'current'"
+                  [class]="activeOrderTab === 'current' ? 'bg-red-600 text-white sm:bg-transparent sm:text-red-600 sm:border-red-600' : 'bg-gray-100 text-gray-700 sm:bg-transparent sm:text-gray-600 sm:border-transparent'"
+                  class="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base font-semibold transition-colors sm:border-b-2 rounded-md sm:rounded-none mb-1 sm:mb-0 mx-1 sm:mx-0 mt-1 sm:mt-0">
+            الطلبات الجارية ({{ getCurrentOrders().length }})
+          </button>
+          <button (click)="activeOrderTab = 'completed'"
+                  [class]="activeOrderTab === 'completed' ? 'bg-red-600 text-white sm:bg-transparent sm:text-red-600 sm:border-red-600' : 'bg-gray-100 text-gray-700 sm:bg-transparent sm:text-gray-600 sm:border-transparent'"
+                  class="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base font-semibold transition-colors sm:border-b-2 rounded-md sm:rounded-none mb-1 sm:mb-0 mx-1 sm:mx-0">
+            الطلبات المكتملة ({{ getCompletedOrders().length }})
+          </button>
+          <button (click)="activeOrderTab = 'cancelled'"
+                  [class]="activeOrderTab === 'cancelled' ? 'bg-red-600 text-white sm:bg-transparent sm:text-red-600 sm:border-red-600' : 'bg-gray-100 text-gray-700 sm:bg-transparent sm:text-gray-600 sm:border-transparent'"
+                  class="flex-1 py-2.5 sm:py-3 px-3 sm:px-4 text-sm sm:text-base font-semibold transition-colors sm:border-b-2 rounded-md sm:rounded-none mb-1 sm:mb-0 mx-1 sm:mx-0">
+            الطلبات الملغاة ({{ getCancelledOrders().length }})
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Orders -->
+    <div *ngIf="!order && activeOrderTab === 'current' && getCurrentOrders().length > 0" class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+      <h2 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">الطلبات الجارية</h2>
+      <div class="space-y-3 sm:space-y-4">
+        <div *ngFor="let userOrder of getCurrentOrders()"
              (click)="selectOrder(userOrder)"
-             class="border border-gray-200 rounded-lg p-5 hover:border-red-500 hover:shadow-md transition-all cursor-pointer">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <p class="font-semibold text-gray-800 mb-1">طلب رقم: {{ userOrder.orderNumber }}</p>
-              <p class="text-sm text-gray-600 mb-1">{{ formatArabicDate(userOrder.createdAt) }}</p>
-              <p class="text-sm text-gray-600">عدد المنتجات: {{ userOrder.items?.length || 0 }}</p>
+             class="border border-gray-200 rounded-lg p-3 sm:p-4 lg:p-5 hover:border-red-500 hover:shadow-md transition-all cursor-pointer">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 sm:mb-3 gap-2">
+            <div class="flex-1">
+              <p class="text-sm sm:text-base font-semibold text-gray-800 mb-1">طلب رقم: {{ userOrder.orderNumber }}</p>
+              <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ formatArabicDate(userOrder.createdAt) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">عدد المنتجات: {{ userOrder.items?.length || 0 }}</p>
             </div>
-            <div class="text-left">
-              <span [class]="getStatusClass(userOrder.status)" class="px-3 py-1 rounded-full text-xs font-medium inline-block">
+            <div class="self-start">
+              <span [class]="getStatusClass(userOrder.status)" class="px-2 sm:px-3 py-1 rounded-full text-xs font-medium inline-block whitespace-nowrap">
                 {{ getStatusText(userOrder.status) }}
               </span>
             </div>
           </div>
 
           <!-- Products Preview -->
-          <div class="border-t border-gray-100 pt-3 mt-3 mb-3">
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 mb-2 sm:mb-3">
             <p class="text-xs text-gray-500 mb-2 font-semibold">المنتجات:</p>
             <div class="space-y-2">
               <!-- Show first 3 products -->
-              <div *ngFor="let item of userOrder.items.slice(0, 3)" class="flex items-center gap-3 bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors">
-                <img 
-                  [src]="item.product?.images && item.product.images.length > 0 ? item.product.images[0] : 'assets/images/placeholder.jpg'" 
+              <div *ngFor="let item of userOrder.items.slice(0, 3)" class="flex items-center gap-2 sm:gap-3 bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors">
+                <img
+                  [src]="item.product?.images && item.product.images.length > 0 ? item.product.images[0] : 'assets/images/placeholder.jpg'"
                   [alt]="item.product?.name"
-                  class="w-12 h-12 object-cover rounded-md border border-gray-200"
+                  class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md border border-gray-200 flex-shrink-0"
                   onerror="this.src='assets/images/placeholder.jpg'">
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-medium text-gray-800 truncate">{{ item.product?.name || 'منتج' }}</p>
-                  <div class="flex items-center gap-2 text-xs text-gray-600">
+                  <p class="text-xs sm:text-sm font-medium text-gray-800 truncate">{{ item.product?.name || 'منتج' }}</p>
+                  <div class="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-600">
                     <span>الكمية: {{ item.quantity }}</span>
                     <span class="text-gray-400">•</span>
                     <span class="font-semibold text-red-600">{{ item.price }} ج.م</span>
                   </div>
                 </div>
-                <div class="text-left">
-                  <p class="text-sm font-bold text-gray-800">{{ item.price * item.quantity }} ج.م</p>
+                <div class="text-left flex-shrink-0">
+                  <p class="text-xs sm:text-sm font-bold text-gray-800">{{ item.price * item.quantity }} ج.م</p>
                 </div>
               </div>
-              
+
               <!-- Show "more" indicator if there are more than 3 products -->
               <div *ngIf="userOrder.items.length > 3" class="flex items-center justify-center bg-gray-50 rounded-lg p-2 border border-dashed border-gray-300">
                 <p class="text-xs text-gray-500">+ {{ userOrder.items.length - 3 }} منتج آخر</p>
               </div>
             </div>
           </div>
-          
+
           <!-- Price Breakdown -->
-          <div class="border-t border-gray-100 pt-3 mt-3 space-y-1 text-sm">
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 space-y-1 text-xs sm:text-sm">
             <div class="flex justify-between text-gray-600">
               <span>المجموع الفرعي:</span>
               <span>{{ userOrder.subtotal }} ج.م</span>
@@ -92,43 +115,217 @@
       </div>
     </div>
 
-    <!-- No Orders Found -->
-    <div *ngIf="!order && userOrders.length === 0 && !searched" class="text-center py-16">
-      <svg class="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Completed Orders -->
+    <div *ngIf="!order && activeOrderTab === 'completed' && getCompletedOrders().length > 0" class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+      <h2 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">الطلبات المكتملة</h2>
+      <div class="space-y-3 sm:space-y-4">
+        <div *ngFor="let userOrder of getCompletedOrders()"
+             (click)="selectOrder(userOrder)"
+             class="border border-gray-200 rounded-lg p-3 sm:p-4 lg:p-5 hover:border-red-500 hover:shadow-md transition-all cursor-pointer">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 sm:mb-3 gap-2">
+            <div class="flex-1">
+              <p class="text-sm sm:text-base font-semibold text-gray-800 mb-1">طلب رقم: {{ userOrder.orderNumber }}</p>
+              <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ formatArabicDate(userOrder.createdAt) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">عدد المنتجات: {{ userOrder.items?.length || 0 }}</p>
+            </div>
+            <div class="self-start">
+              <span [class]="getStatusClass(userOrder.status)" class="px-2 sm:px-3 py-1 rounded-full text-xs font-medium inline-block whitespace-nowrap">
+                {{ getStatusText(userOrder.status) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Products Preview -->
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 mb-2 sm:mb-3">
+            <p class="text-xs text-gray-500 mb-2 font-semibold">المنتجات:</p>
+            <div class="space-y-2">
+              <!-- Show first 3 products -->
+              <div *ngFor="let item of userOrder.items.slice(0, 3)" class="flex items-center gap-2 sm:gap-3 bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors">
+                <img
+                  [src]="item.product?.images && item.product.images.length > 0 ? item.product.images[0] : 'assets/images/placeholder.jpg'"
+                  [alt]="item.product?.name"
+                  class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md border border-gray-200 flex-shrink-0"
+                  onerror="this.src='assets/images/placeholder.jpg'">
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs sm:text-sm font-medium text-gray-800 truncate">{{ item.product?.name || 'منتج' }}</p>
+                  <div class="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-600">
+                    <span>الكمية: {{ item.quantity }}</span>
+                    <span class="text-gray-400">•</span>
+                    <span class="font-semibold text-red-600">{{ item.price }} ج.م</span>
+                  </div>
+                </div>
+                <div class="text-left flex-shrink-0">
+                  <p class="text-xs sm:text-sm font-bold text-gray-800">{{ item.price * item.quantity }} ج.م</p>
+                </div>
+              </div>
+
+              <!-- Show "more" indicator if there are more than 3 products -->
+              <div *ngIf="userOrder.items.length > 3" class="flex items-center justify-center bg-gray-50 rounded-lg p-2 border border-dashed border-gray-300">
+                <p class="text-xs text-gray-500">+ {{ userOrder.items.length - 3 }} منتج آخر</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 space-y-1 text-xs sm:text-sm">
+            <div class="flex justify-between text-gray-600">
+              <span>المجموع الفرعي:</span>
+              <span>{{ userOrder.subtotal }} ج.م</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+              <span>رسوم التوصيل:</span>
+              <span>{{ userOrder.deliveryFee }} ج.م</span>
+            </div>
+            <div *ngIf="userOrder.discountAmount > 0" class="flex justify-between text-green-600">
+              <span>الخصم <span *ngIf="userOrder.discountCode">({{ userOrder.discountCode }})</span>:</span>
+              <span>-{{ userOrder.discountAmount }} ج.م</span>
+            </div>
+            <div class="flex justify-between font-bold text-red-600 pt-1 border-t border-gray-100">
+              <span>الإجمالي النهائي:</span>
+              <span>{{ userOrder.totalAmount }} ج.م</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancelled Orders -->
+    <div *ngIf="!order && activeOrderTab === 'cancelled' && getCancelledOrders().length > 0" class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+      <h2 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">الطلبات الملغاة</h2>
+      <div class="space-y-3 sm:space-y-4">
+        <div *ngFor="let userOrder of getCancelledOrders()"
+             (click)="selectOrder(userOrder)"
+             class="border border-gray-200 rounded-lg p-3 sm:p-4 lg:p-5 hover:border-red-500 hover:shadow-md transition-all cursor-pointer">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 sm:mb-3 gap-2">
+            <div class="flex-1">
+              <p class="text-sm sm:text-base font-semibold text-gray-800 mb-1">طلب رقم: {{ userOrder.orderNumber }}</p>
+              <p class="text-xs sm:text-sm text-gray-600 mb-1">{{ formatArabicDate(userOrder.createdAt) }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">عدد المنتجات: {{ userOrder.items?.length || 0 }}</p>
+            </div>
+            <div class="self-start">
+              <span [class]="getStatusClass(userOrder.status)" class="px-2 sm:px-3 py-1 rounded-full text-xs font-medium inline-block whitespace-nowrap">
+                {{ getStatusText(userOrder.status) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Products Preview -->
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 mb-2 sm:mb-3">
+            <p class="text-xs text-gray-500 mb-2 font-semibold">المنتجات:</p>
+            <div class="space-y-2">
+              <!-- Show first 3 products -->
+              <div *ngFor="let item of userOrder.items.slice(0, 3)" class="flex items-center gap-2 sm:gap-3 bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors">
+                <img
+                  [src]="item.product?.images && item.product.images.length > 0 ? item.product.images[0] : 'assets/images/placeholder.jpg'"
+                  [alt]="item.product?.name"
+                  class="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md border border-gray-200 flex-shrink-0"
+                  onerror="this.src='assets/images/placeholder.jpg'">
+                <div class="flex-1 min-w-0">
+                  <p class="text-xs sm:text-sm font-medium text-gray-800 truncate">{{ item.product?.name || 'منتج' }}</p>
+                  <div class="flex items-center gap-1.5 sm:gap-2 text-xs text-gray-600">
+                    <span>الكمية: {{ item.quantity }}</span>
+                    <span class="text-gray-400">•</span>
+                    <span class="font-semibold text-red-600">{{ item.price }} ج.م</span>
+                  </div>
+                </div>
+                <div class="text-left flex-shrink-0">
+                  <p class="text-xs sm:text-sm font-bold text-gray-800">{{ item.price * item.quantity }} ج.م</p>
+                </div>
+              </div>
+
+              <!-- Show "more" indicator if there are more than 3 products -->
+              <div *ngIf="userOrder.items.length > 3" class="flex items-center justify-center bg-gray-50 rounded-lg p-2 border border-dashed border-gray-300">
+                <p class="text-xs text-gray-500">+ {{ userOrder.items.length - 3 }} منتج آخر</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Price Breakdown -->
+          <div class="border-t border-gray-100 pt-2 sm:pt-3 mt-2 sm:mt-3 space-y-1 text-xs sm:text-sm">
+            <div class="flex justify-between text-gray-600">
+              <span>المجموع الفرعي:</span>
+              <span>{{ userOrder.subtotal }} ج.م</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+              <span>رسوم التوصيل:</span>
+              <span>{{ userOrder.deliveryFee }} ج.م</span>
+            </div>
+            <div *ngIf="userOrder.discountAmount > 0" class="flex justify-between text-green-600">
+              <span>الخصم <span *ngIf="userOrder.discountCode">({{ userOrder.discountCode }})</span>:</span>
+              <span>-{{ userOrder.discountAmount }} ج.م</span>
+            </div>
+            <div class="flex justify-between font-bold text-red-600 pt-1 border-t border-gray-100">
+              <span>الإجمالي النهائي:</span>
+              <span>{{ userOrder.totalAmount }} ج.م</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty States for Each Tab -->
+    <div *ngIf="!order && activeOrderTab === 'current' && getCurrentOrders().length === 0" class="text-center py-12 sm:py-16 bg-white rounded-lg shadow-md">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 text-gray-400 mx-auto mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
-      <h2 class="text-2xl font-semibold text-gray-600 mb-4">لا توجد طلبات</h2>
-      <p class="text-gray-500 mb-8">لم تقم بإنشاء أي طلبات بعد</p>
-      <a routerLink="/categories" class="bg-red-600 text-white px-8 py-3 rounded-md hover:bg-red-700 transition-colors inline-block">تسوق الآن</a>
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-600 mb-3 sm:mb-4">لا توجد طلبات جارية</h2>
+      <p class="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">ليس لديك أي طلبات قيد المعالجة حالياً</p>
+      <a routerLink="/categories" class="bg-red-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors inline-block">تسوق الآن</a>
+    </div>
+
+    <div *ngIf="!order && activeOrderTab === 'completed' && getCompletedOrders().length === 0" class="text-center py-12 sm:py-16 bg-white rounded-lg shadow-md">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 text-gray-400 mx-auto mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-600 mb-3 sm:mb-4">لا توجد طلبات مكتملة</h2>
+      <p class="text-sm sm:text-base text-gray-500">ليس لديك أي طلبات مكتملة بعد</p>
+    </div>
+
+    <div *ngIf="!order && activeOrderTab === 'cancelled' && getCancelledOrders().length === 0" class="text-center py-12 sm:py-16 bg-white rounded-lg shadow-md">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 text-gray-400 mx-auto mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-600 mb-3 sm:mb-4">لا توجد طلبات ملغاة</h2>
+      <p class="text-sm sm:text-base text-gray-500">ليس لديك أي طلبات ملغاة</p>
+    </div>
+
+    <!-- No Orders Found -->
+    <div *ngIf="!order && userOrders.length === 0 && !searched" class="text-center py-12 sm:py-16 bg-white rounded-lg shadow-md">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 text-gray-400 mx-auto mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-600 mb-3 sm:mb-4">لا توجد طلبات</h2>
+      <p class="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8">لم تقم بإنشاء أي طلبات بعد</p>
+      <a routerLink="/categories" class="bg-red-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors inline-block">تسوق الآن</a>
     </div>
 
     <!-- Order Details -->
-    <div *ngIf="order" class="space-y-8">
+    <div *ngIf="order" class="space-y-4 sm:space-y-6 lg:space-y-8">
       <!-- Back Button -->
-      <button (click)="backToList()" class="flex items-center text-red-600 hover:text-red-700 font-semibold mb-4">
-        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <button (click)="backToList()" class="flex items-center text-red-600 hover:text-red-700 font-semibold text-sm sm:text-base mb-2 sm:mb-4">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
         العودة لقائمة الطلبات
       </button>
       <!-- Order Summary -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-          <div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">طلب رقم: {{ order.id }}</h2>
-            <p class="text-gray-600 mb-1">تاريخ الطلب: {{ formatArabicDate(order.orderDate.toISOString()) }}</p>
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-3 sm:mb-4">
+          <div class="mb-3 md:mb-0">
+            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 mb-1 sm:mb-2">طلب رقم: {{ order.id }}</h2>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600">تاريخ الطلب: {{ formatArabicDate(order.orderDate.toISOString()) }}</p>
           </div>
-          <div class="mt-4 md:mt-0 flex items-center gap-2">
-            <span [class]="getStatusClass(order.status)" class="px-4 py-2 rounded-full text-sm font-medium">
+          <div class="flex items-center gap-2">
+            <span [class]="getStatusClass(order.status)" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap">
               {{ isRefreshing ? 'جاري التحديث...' : getStatusText(order.status) }}
             </span>
-            <button 
-              (click)="refreshOrderStatus()" 
+            <button
+              (click)="refreshOrderStatus()"
               [disabled]="isRefreshing"
-              class="text-blue-600 hover:text-blue-700 hover:scale-110 transition-all duration-300 p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full hover:bg-blue-50"
+              class="text-blue-600 hover:text-blue-700 hover:scale-110 transition-all duration-300 p-1.5 sm:p-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full hover:bg-blue-50"
               [class.animate-spin]="isRefreshing"
               title="{{ isRefreshing ? 'جاري التحديث...' : 'تحديث حالة الطلب' }}">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
               </svg>
             </button>
@@ -136,49 +333,49 @@
         </div>
         
         <!-- Price Summary in Order Header -->
-        <div class="border-t border-gray-200 pt-4 mt-4">
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div class="bg-gray-50 rounded-lg p-3">
+        <div class="border-t border-gray-200 pt-3 sm:pt-4 mt-3 sm:mt-4">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 text-center">
+            <div class="bg-gray-50 rounded-lg p-2 sm:p-3">
               <p class="text-xs text-gray-500 mb-1">المجموع الفرعي</p>
-              <p class="font-semibold text-gray-800">{{ order.subtotal }} ج.م</p>
+              <p class="text-sm sm:text-base font-semibold text-gray-800">{{ order.subtotal }} ج.م</p>
             </div>
-            <div class="bg-gray-50 rounded-lg p-3">
+            <div class="bg-gray-50 rounded-lg p-2 sm:p-3">
               <p class="text-xs text-gray-500 mb-1">رسوم التوصيل</p>
-              <p class="font-semibold text-gray-800">{{ order.deliveryFee }} ج.م</p>
+              <p class="text-sm sm:text-base font-semibold text-gray-800">{{ order.deliveryFee }} ج.م</p>
             </div>
-            <div *ngIf="order.discountAmount > 0" class="bg-green-50 rounded-lg p-3">
+            <div *ngIf="order.discountAmount > 0" class="bg-green-50 rounded-lg p-2 sm:p-3">
               <p class="text-xs text-green-600 mb-1">الخصم</p>
-              <p class="font-semibold text-green-600">-{{ order.discountAmount }} ج.م</p>
+              <p class="text-sm sm:text-base font-semibold text-green-600">-{{ order.discountAmount }} ج.م</p>
             </div>
-            <div class="bg-red-50 rounded-lg p-3" [class.col-span-1]="order.discountAmount > 0" [class.md:col-span-1]="order.discountAmount > 0" [class.col-span-2]="order.discountAmount === 0" [class.md:col-span-2]="order.discountAmount === 0">
+            <div class="bg-red-50 rounded-lg p-2 sm:p-3" [class.col-span-1]="order.discountAmount > 0" [class.md:col-span-1]="order.discountAmount > 0" [class.col-span-2]="order.discountAmount === 0" [class.md:col-span-2]="order.discountAmount === 0">
               <p class="text-xs text-red-600 mb-1">الإجمالي النهائي</p>
-              <p class="font-bold text-red-600 text-lg">{{ order.totalAmount }} ج.م</p>
+              <p class="text-base sm:text-lg font-bold text-red-600">{{ order.totalAmount }} ج.م</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Tracking Timeline -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-xl font-semibold text-gray-800 mb-6">حالة الطلب</h3>
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+        <h3 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">حالة الطلب</h3>
 
         <div class="relative">
-          <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+          <div class="absolute left-3 sm:left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
 
-          <div class="space-y-8">
+          <div class="space-y-6 sm:space-y-8">
             <div *ngFor="let step of trackingSteps; let i = index" class="relative flex items-start">
               <div [class]="step.completed ? 'bg-green-500' : 'bg-gray-300'"
-                   class="w-8 h-8 rounded-full flex items-center justify-center z-10">
-                <svg *ngIf="step.completed" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                   class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center z-10 flex-shrink-0">
+                <svg *ngIf="step.completed" class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <span *ngIf="!step.completed" class="text-white text-sm font-bold">{{ i + 1 }}</span>
+                <span *ngIf="!step.completed" class="text-white text-xs sm:text-sm font-bold">{{ i + 1 }}</span>
               </div>
 
-              <div class="mr-6 flex-1">
-                <h4 class="text-lg font-semibold text-gray-800">{{ step.title }}</h4>
-                <p class="text-gray-600">{{ step.description }}</p>
-                <p *ngIf="step.date" class="text-sm text-gray-500 mt-1">
+              <div class="mr-4 sm:mr-6 flex-1">
+                <h4 class="text-sm sm:text-base lg:text-lg font-semibold text-gray-800">{{ step.title }}</h4>
+                <p class="text-xs sm:text-sm lg:text-base text-gray-600">{{ step.description }}</p>
+                <p *ngIf="step.date" class="text-xs sm:text-sm text-gray-500 mt-1">
                   {{ formatArabicDate(step.date.toISOString()) }}
                 </p>
               </div>
@@ -188,100 +385,100 @@
       </div>
 
       <!-- Order Items -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-xl font-semibold text-gray-800 mb-6">تفاصيل الطلب</h3>
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+        <h3 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">تفاصيل الطلب</h3>
 
-        <div class="space-y-4">
-          <div *ngFor="let item of order.items" class="flex items-center space-x-4 space-x-reverse border-b border-gray-100 pb-4">
-            <img [src]="item.product.image" [alt]="item.product.name" class="w-16 h-16 object-cover rounded-md">
-            <div class="flex-1">
-              <h4 class="font-semibold text-gray-800">{{ item.product.name }}</h4>
-              <p class="text-gray-600 text-sm">{{ item.product.brand }}</p>
-              <p class="text-gray-600 text-sm">الكمية: {{ item.quantity }}</p>
+        <div class="space-y-3 sm:space-y-4">
+          <div *ngFor="let item of order.items" class="flex items-center space-x-3 sm:space-x-4 space-x-reverse border-b border-gray-100 pb-3 sm:pb-4">
+            <img [src]="item.product.image" [alt]="item.product.name" class="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <h4 class="text-sm sm:text-base font-semibold text-gray-800 truncate">{{ item.product.name }}</h4>
+              <p class="text-xs sm:text-sm text-gray-600">{{ item.product.brand }}</p>
+              <p class="text-xs sm:text-sm text-gray-600">الكمية: {{ item.quantity }}</p>
             </div>
-            <div class="text-right">
-              <p class="font-semibold text-gray-800">{{ item.product.price * item.quantity }} ج.م</p>
+            <div class="text-left flex-shrink-0">
+              <p class="text-sm sm:text-base font-semibold text-gray-800">{{ item.product.price * item.quantity }} ج.م</p>
             </div>
           </div>
         </div>
 
-        <div class="border-t border-gray-200 pt-4 mt-4 space-y-2">
-          <div class="flex justify-between items-center text-gray-600">
+        <div class="border-t border-gray-200 pt-3 sm:pt-4 mt-3 sm:mt-4 space-y-1.5 sm:space-y-2">
+          <div class="flex justify-between items-center text-xs sm:text-sm lg:text-base text-gray-600">
             <span>المجموع الفرعي:</span>
             <span>{{ order.subtotal }} ج.م</span>
           </div>
-          <div class="flex justify-between items-center text-gray-600">
+          <div class="flex justify-between items-center text-xs sm:text-sm lg:text-base text-gray-600">
             <span>رسوم التوصيل:</span>
             <span>{{ order.deliveryFee }} ج.م</span>
           </div>
-          <div *ngIf="order.discountAmount > 0" class="flex justify-between items-center text-green-600">
+          <div *ngIf="order.discountAmount > 0" class="flex justify-between items-center text-xs sm:text-sm lg:text-base text-green-600">
             <span>الخصم <span *ngIf="order.discountCode">({{ order.discountCode }})</span>:</span>
             <span>-{{ order.discountAmount }} ج.م</span>
           </div>
-          <div class="flex justify-between items-center pt-2 border-t">
-            <span class="text-lg font-semibold text-gray-800">المجموع الكلي:</span>
-            <span class="text-xl font-bold text-red-600">{{ order.totalAmount }} ج.م</span>
+          <div class="flex justify-between items-center pt-1.5 sm:pt-2 border-t">
+            <span class="text-sm sm:text-base lg:text-lg font-semibold text-gray-800">المجموع الكلي:</span>
+            <span class="text-base sm:text-lg lg:text-xl font-bold text-red-600">{{ order.totalAmount }} ج.م</span>
           </div>
         </div>
       </div>
 
       <!-- Delivery Information -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-xl font-semibold text-gray-800 mb-6">معلومات التوصيل</h3>
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+        <h3 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-4 sm:mb-6">معلومات التوصيل</h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div *ngIf="order.customerInfo?.name">
-            <h4 class="font-semibold text-gray-800 mb-2">اسم العميل</h4>
-            <p class="text-gray-600">{{ order.customerInfo.name }}</p>
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">اسم العميل</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600">{{ order.customerInfo.name }}</p>
           </div>
 
           <div *ngIf="order.customerInfo?.email">
-            <h4 class="font-semibold text-gray-800 mb-2">البريد الإلكتروني</h4>
-            <p class="text-gray-600">{{ order.customerInfo.email }}</p>
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">البريد الإلكتروني</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600 break-all">{{ order.customerInfo.email }}</p>
           </div>
 
           <div>
-            <h4 class="font-semibold text-gray-800 mb-2">عنوان التوصيل</h4>
-            <p class="text-gray-600">{{ order.deliveryAddress }}</p>
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">عنوان التوصيل</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600">{{ order.deliveryAddress }}</p>
           </div>
 
           <div>
-            <h4 class="font-semibold text-gray-800 mb-2">طريقة الدفع</h4>
-            <p class="text-gray-600">{{ getPaymentMethodText(order.paymentMethod) }}</p>
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">طريقة الدفع</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600">{{ getPaymentMethodText(order.paymentMethod) }}</p>
           </div>
 
           <div *ngIf="order.trackingNumber">
-            <h4 class="font-semibold text-gray-800 mb-2">رقم التتبع</h4>
-            <p class="text-gray-600 font-mono">{{ order.trackingNumber }}</p>
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">رقم التتبع</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600 font-mono">{{ order.trackingNumber }}</p>
           </div>
 
           <div *ngIf="order.deliveryDate">
-            <h4 class="font-semibold text-gray-800 mb-2">تاريخ التوصيل المتوقع</h4>
-            <p class="text-gray-600">{{ formatArabicDate(order.deliveryDate.toISOString()) }}
+            <h4 class="text-sm sm:text-base font-semibold text-gray-800 mb-1 sm:mb-2">تاريخ التوصيل المتوقع</h4>
+            <p class="text-xs sm:text-sm lg:text-base text-gray-600">{{ formatArabicDate(order.deliveryDate.toISOString()) }}
             </p>
           </div>
         </div>
       </div>
 
       <!-- Contact Support -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-xl font-semibold text-gray-800 mb-4">هل تحتاج مساعدة؟</h3>
-        <p class="text-gray-600 mb-4">إذا كان لديك أي استفسارات حول طلبك، لا تتردد في التواصل معنا</p>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a href="tel:0123456789" class="bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 transition-colors text-center">اتصل بنا</a>
-          <a href="mailto:support@elfateh.com" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-300 transition-colors text-center">راسلنا عبر البريد الإلكتروني</a>
+      <div class="bg-white rounded-lg shadow-md p-4 sm:p-5 lg:p-6">
+        <h3 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 mb-3 sm:mb-4">هل تحتاج مساعدة؟</h3>
+        <p class="text-xs sm:text-sm lg:text-base text-gray-600 mb-3 sm:mb-4">إذا كان لديك أي استفسارات حول طلبك، لا تتردد في التواصل معنا</p>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <a href="tel:0123456789" class="bg-red-600 text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors text-center">اتصل بنا</a>
+          <a href="mailto:support@elfateh.com" class="bg-gray-200 text-gray-700 px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-gray-300 transition-colors text-center">راسلنا عبر البريد الإلكتروني</a>
         </div>
       </div>
     </div>
 
     <!-- No Order Found -->
-    <div *ngIf="searched && !order" class="text-center py-16">
-      <svg class="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div *ngIf="searched && !order" class="text-center py-12 sm:py-16 bg-white rounded-lg shadow-md">
+      <svg class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 text-gray-400 mx-auto mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
       </svg>
-      <h2 class="text-2xl font-semibold text-gray-600 mb-4">لم يتم العثور على الطلب</h2>
-      <p class="text-gray-500 mb-8">تأكد من إدخال رقم الطلب الصحيح أو تواصل معنا للمساعدة</p>
-      <a routerLink="/profile" class="bg-red-600 text-white px-8 py-3 rounded-md hover:bg-red-700 transition-colors">عرض جميع طلباتي</a>
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-600 mb-3 sm:mb-4">لم يتم العثور على الطلب</h2>
+      <p class="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 px-4">تأكد من إدخال رقم الطلب الصحيح أو تواصل معنا للمساعدة</p>
+      <a routerLink="/profile" class="bg-red-600 text-white px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors inline-block">عرض جميع طلباتي</a>
     </div>
   </div>
 </div>

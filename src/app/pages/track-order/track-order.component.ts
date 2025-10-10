@@ -19,6 +19,7 @@ export class TrackOrderComponent implements OnInit {
   userOrders: any[] = [];
   trackingSteps: any[] = [];
   isRefreshing: boolean = false;
+  activeOrderTab: 'current' | 'completed' | 'cancelled' = 'current';
 
   constructor(
     private route: ActivatedRoute, 
@@ -239,23 +240,23 @@ export class TrackOrderComponent implements OnInit {
 
   formatArabicDate(dateString: string): string {
     const date = new Date(dateString);
-    
+
     // Arabic months
     const arabicMonths = [
       'يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو',
       'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
     ];
-    
+
     // Arabic days
     const arabicDays = [
       'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'
     ];
-    
+
     const day = date.getDate();
     const month = arabicMonths[date.getMonth()];
     const year = date.getFullYear();
     const dayName = arabicDays[date.getDay()];
-    
+
     // Format time
     let hours = date.getHours();
     const minutes = date.getMinutes();
@@ -263,7 +264,21 @@ export class TrackOrderComponent implements OnInit {
     hours = hours % 12;
     hours = hours ? hours : 12; // the hour '0' should be '12'
     const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-    
+
     return `${dayName}, ${day} ${month} ${year} - ${hours}:${minutesStr} ${ampm}`;
+  }
+
+  getCurrentOrders(): any[] {
+    return this.userOrders.filter(order =>
+      ['pending', 'confirmed', 'processing', 'shipped'].includes(order.status)
+    );
+  }
+
+  getCompletedOrders(): any[] {
+    return this.userOrders.filter(order => order.status === 'delivered');
+  }
+
+  getCancelledOrders(): any[] {
+    return this.userOrders.filter(order => order.status === 'cancelled');
   }
 } 
