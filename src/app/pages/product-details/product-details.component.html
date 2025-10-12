@@ -166,6 +166,98 @@
         </div>
       </div>
     </div>
+
+    <!-- Related Products Section -->
+    <div *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 0" class="mt-12">
+      <div class="bg-white rounded-xl p-6 border border-gray-200">
+        <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+         قد يعجبك
+        </h2>
+        
+        <!-- Products Slider -->
+        <div class="relative">
+          <!-- Loading State -->
+          <div *ngIf="isLoadingRelatedProducts" class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
+            <span class="mr-3 text-gray-600">جاري تحميل المنتجات ذات الصلة...</span>
+          </div>
+          
+          <!-- Navigation Buttons -->
+          <button *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 3"
+                  (click)="scrollSlider('left')"
+                  class="slider-nav-btn slider-nav-left">
+            <svg class="w-5 h-5 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <button *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 3"
+                  (click)="scrollSlider('right')"
+                  class="slider-nav-btn slider-nav-right">
+            <svg class="w-5 h-5 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+          
+          <!-- Products Slider Container -->
+          <div *ngIf="!isLoadingRelatedProducts" 
+               #relatedProductsSlider
+               class="flex overflow-x-auto scroll-smooth gap-4 pb-4 hide-scrollbar">
+            <div *ngFor="let relatedProduct of relatedProducts" 
+                 class="flex-shrink-0 w-48 md:w-56 lg:w-64 bg-gray-50 rounded-lg p-4 hover:shadow-md transition-all duration-300 cursor-pointer group"
+                 [routerLink]="['/product', relatedProduct._id || relatedProduct.id]">
+              
+              <!-- Product Image -->
+              <div class="relative mb-3">
+                <img [src]="relatedProduct.images?.[0] || relatedProduct.image" 
+                     [alt]="relatedProduct.name"
+                     class="w-full h-40 object-cover rounded-lg bg-white">
+                
+                <!-- Discount Badge -->
+                <div *ngIf="relatedProduct.originalPrice && relatedProduct.originalPrice > relatedProduct.price"
+                     class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                  -{{ calculateRelatedProductDiscountPercentage(relatedProduct) }}%
+                </div>
+              </div>
+              
+              <!-- Product Info -->
+              <div class="space-y-2">
+                <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors">
+                  {{ relatedProduct.name }}
+                </h3>
+                
+                <!-- Price -->
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-red-600">
+                    {{ relatedProduct.priceAfterDiscount || relatedProduct.price }} ج.م
+                  </span>
+                  <span *ngIf="relatedProduct.originalPrice && relatedProduct.originalPrice > relatedProduct.price"
+                        class="text-xs text-gray-400 line-through">
+                    {{ relatedProduct.originalPrice }} ج.م
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Related Products Message -->
+    <!-- <div *ngIf="!isLoadingRelatedProducts && relatedProducts.length === 0 && product" class="mt-12">
+      <div class="bg-white rounded-xl p-6 border border-gray-200 text-center">
+        <div class="text-gray-500 mb-4">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-700 mb-2">لا توجد منتجات ذات صلة</h3>
+          <p class="text-sm text-gray-500">لم نتمكن من العثور على منتجات أخرى من نفس الفئة</p>
+        </div>
+      </div>
+    </div> -->
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +22,13 @@ export class ProductDetailsComponent implements OnInit {
   // Lightbox properties
   showLightbox: boolean = false;
   lightboxImage: string = '';
+  
+  // Related products
+  relatedProducts: Product[] = [];
+  isLoadingRelatedProducts: boolean = false;
+  
+  // Slider reference
+  @ViewChild('relatedProductsSlider') relatedProductsSlider!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,6 +53,138 @@ export class ProductDetailsComponent implements OnInit {
       this.product = product;
       if (product && product.images && product.images.length > 0) {
         this.selectedImage = product?.images[0];
+      }
+      
+      console.log('Loaded product:', product);
+      console.log('Product subcategory:', product?.subCategory);
+      
+      // Load related products - try multiple approaches
+      if (product) {
+        // Try different subcategory fields
+        const subcategoryId = product.subCategory || 
+                             product.subcategory?._id || 
+                             product.subcategory || 
+                             product.category;
+        
+        console.log('Product fields:', {
+          subCategory: product.subCategory,
+          subcategory: product.subcategory,
+          category: product.category,
+          finalSubcategoryId: subcategoryId
+        });
+        
+        if (subcategoryId) {
+          console.log('Loading related products with subcategory:', subcategoryId);
+          this.loadRelatedProducts(subcategoryId, productId);
+        } else {
+          console.log('No subcategory found, loading all products as fallback');
+          // Load all products as fallback
+          this.loadAllProductsAsRelated(productId);
+        }
+      }
+    });
+  }
+
+  loadRelatedProducts(subcategoryId: string, currentProductId: string | number): void {
+    this.isLoadingRelatedProducts = true;
+    console.log('Loading related products for subcategory:', subcategoryId);
+    console.log('Current product ID:', currentProductId);
+    
+    // Use the subcategory filter to get related products
+    const queryString = `subcategory=${encodeURIComponent(subcategoryId)}&limit=8`;
+    console.log('Query string:', queryString);
+    
+    this.productService.getProductsWithFilters(queryString).subscribe({
+      next: (response) => {
+        this.isLoadingRelatedProducts = false;
+        console.log('Related products response:', response);
+        
+        if (response.success && response.data && response.data.products) {
+          console.log('Found products:', response.data.products.length);
+          
+          // Filter out the current product from related products
+          this.relatedProducts = response.data.products.filter(
+            (product: Product) => product._id !== currentProductId && product.id !== currentProductId
+          );
+          
+          console.log('Related products after filtering:', this.relatedProducts.length);
+          
+          // If no related products found, try fallback
+          if (this.relatedProducts.length === 0) {
+            console.log('No related products found, trying fallback method...');
+            this.loadRelatedProductsFallback(subcategoryId, currentProductId);
+            return;
+          }
+          
+          // Limit to 6 products for the slider
+          this.relatedProducts = this.relatedProducts.slice(0, 6);
+          console.log('Final related products:', this.relatedProducts.length);
+        } else {
+          console.log('No products found in response, trying fallback method...');
+          this.loadRelatedProductsFallback(subcategoryId, currentProductId);
+        }
+      },
+      error: (error) => {
+        this.isLoadingRelatedProducts = false;
+        console.error('Error loading related products:', error);
+        
+        // Fallback: try to load all products and filter by subcategory
+        console.log('Trying fallback method...');
+        this.loadRelatedProductsFallback(subcategoryId, currentProductId);
+      }
+    });
+  }
+
+  loadRelatedProductsFallback(subcategoryId: string, currentProductId: string | number): void {
+    console.log('Loading all products for fallback filtering...');
+    
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        console.log('All products loaded:', products.length);
+        
+        // Filter products by subcategory
+        const relatedProducts = products.filter((product: Product) => {
+          const productSubcategory = product.subCategory || product.subcategory?._id || product.subcategory || product.category;
+          return productSubcategory === subcategoryId && 
+                 product._id !== currentProductId && 
+                 product.id !== currentProductId;
+        });
+        
+        console.log('Filtered related products:', relatedProducts.length);
+        
+        // Limit to 6 products
+        this.relatedProducts = relatedProducts.slice(0, 6);
+        console.log('Final fallback related products:', this.relatedProducts.length);
+      },
+      error: (error) => {
+        console.error('Fallback method also failed:', error);
+      }
+    });
+  }
+
+  loadAllProductsAsRelated(currentProductId: string | number): void {
+    console.log('Loading all products as related products...');
+    this.isLoadingRelatedProducts = true;
+    
+    this.productService.getProducts().subscribe({
+      next: (products) => {
+        this.isLoadingRelatedProducts = false;
+        console.log('All products loaded for related section:', products.length);
+        
+        // Filter out current product and get random 6 products
+        const filteredProducts = products.filter(
+          (product: Product) => product._id !== currentProductId && product.id !== currentProductId
+        );
+        
+        // Shuffle and take 6 products
+        const shuffled = filteredProducts.sort(() => 0.5 - Math.random());
+        this.relatedProducts = shuffled.slice(0, 6);
+        
+        console.log('Final random related products:', this.relatedProducts.length);
+      },
+      error: (error) => {
+        this.isLoadingRelatedProducts = false;
+        console.error('Error loading all products:', error);
       }
     });
   }
@@ -168,5 +307,33 @@ export class ProductDetailsComponent implements OnInit {
     }
     
     return 0;
+  }
+
+  // Helper method for related products discount percentage
+  calculateRelatedProductDiscountPercentage(product: Product): number {
+    if (!product.originalPrice || product.originalPrice <= product.price) return 0;
+    
+    const originalPrice = product.originalPrice;
+    const currentPrice = product.priceAfterDiscount || product.price;
+    
+    if (originalPrice > 0) {
+      return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
+    }
+    
+    return 0;
+  }
+
+  // Slider navigation methods
+  scrollSlider(direction: 'left' | 'right'): void {
+    if (!this.relatedProductsSlider) return;
+    
+    const element = this.relatedProductsSlider.nativeElement;
+    const scrollAmount = 280; // Width of one product card + gap
+    
+    if (direction === 'left') {
+      element.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      element.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   }
 } 
