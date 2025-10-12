@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators, ReactiveFormsModule, FormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import { OrderService } from '../../services/order.service';
@@ -46,6 +46,9 @@ export class CartComponent implements OnInit {
   isSubmitting = false;
   currentStep = 1; // Step 1: Cart Review, Step 2: Payment Details
   showSuccessDialog = false; // New property for success dialog
+  
+  // Address selection FormControl (separate from main form to avoid conflicts)
+  addressSelectionControl = new FormControl('');
 
   // Saved order details for success dialog
   savedOrderDetails = {
@@ -79,7 +82,6 @@ export class CartComponent implements OnInit {
   // Address Management
   useExistingAddress: boolean = false;
   savedAddresses: Address[] = [];
-  selectedAddressId: string = '';
   isLoadingAddresses: boolean = false;
 
   // Getter for auth service access in template
@@ -150,27 +152,23 @@ export class CartComponent implements OnInit {
   calculateTotals(): void {
     this.totalItems = this.cartService.getTotalItems();
     
-    // Calculate subtotal (original prices)
+    // Calculate subtotal using the actual price after discount
     this.subtotal = this.cartItems.reduce((sum, item) => {
-      const originalPrice = item.product.originalPrice || item.product.price;
-      return sum + (originalPrice * item.quantity);
+      const actualPrice = this.getCurrentPrice(item.product);
+      return sum + (actualPrice * item.quantity);
     }, 0);
 
-    // Calculate discount only if there's a valid coupon
-    if (this.appliedCoupon) {
-      this.discount = this.cartItems.reduce((sum, item) => {
-        if (item.product.originalPrice) {
-          const savings = (item.product.originalPrice - item.product.price) * item.quantity;
-          return sum + savings;
-        }
-        return sum;
-      }, 0);
-    } else {
-      this.discount = 0;
-    }
+    // Calculate product discount (difference between original price and discounted price)
+    this.discount = this.cartItems.reduce((sum, item) => {
+      if (item.product.originalPrice && item.product.originalPrice > this.getCurrentPrice(item.product)) {
+        const savings = (item.product.originalPrice - this.getCurrentPrice(item.product)) * item.quantity;
+        return sum + savings;
+      }
+      return sum;
+    }, 0);
 
-    // Calculate total: subtotal + shipping - product discount - coupon discount
-    this.total = this.subtotal + this.deliveryFee - this.discount - this.couponDiscount;
+    // Calculate total: subtotal + shipping - coupon discount
+    this.total = this.subtotal + this.deliveryFee - this.couponDiscount;
     
     // Ensure total is not negative
     if (this.total < 0) {
@@ -210,7 +208,7 @@ export class CartComponent implements OnInit {
           this.couponMessage = 'كود الكوبون غير صحيح';
         } else {
           // Handle successful response
-          this.appliedCoupon = this.couponCode.trim().toUpperCase();
+          this.appliedCoupon = this.couponCode.trim();
           this.isCouponValid = true;
           
           // Use the discount amount from API response
@@ -250,7 +248,22 @@ export class CartComponent implements OnInit {
   }
 
   getItemPrice(item: CartItem): number {
-    return item.product.price * item.quantity;
+    const actualPrice = this.getCurrentPrice(item.product);
+    return actualPrice * item.quantity;
+  }
+
+  getCurrentPrice(product: any): number {
+    if (!product) return 0;
+    
+    if (product.priceAfterDiscount && product.priceAfterDiscount > 0) {
+      return product.priceAfterDiscount;
+    }
+    
+    if (product.discount && product.discount > 0) {
+      return Math.max(0, product.price - product.discount);
+    }
+    
+    return product.price || 0;
   }
 
   updateQuantity(productId: number, quantity: number): void {
@@ -607,7 +620,7 @@ export class CartComponent implements OnInit {
     this.useExistingAddress = !this.useExistingAddress;
     if (!this.useExistingAddress) {
       // Clear selection and form when switching to new address
-      this.selectedAddressId = '';
+      this.addressSelectionControl.setValue('');
       this.checkoutForm.patchValue({
         deliveryAddress: '',
         city: ''
@@ -624,7 +637,8 @@ export class CartComponent implements OnInit {
   }
 
   onAddressSelect(): void {
-    const selectedAddress = this.savedAddresses.find(addr => addr._id === this.selectedAddressId);
+    const selectedAddressId = this.addressSelectionControl.value;
+    const selectedAddress = this.savedAddresses.find(addr => addr._id === selectedAddressId);
     if (selectedAddress) {
       // Patch form with selected address
       this.checkoutForm.patchValue({

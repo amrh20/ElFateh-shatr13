@@ -107,23 +107,23 @@
                   <p class="text-gray-600 text-sm mb-2">{{ item.product.description }}</p>
                   
                   <!-- Price -->
-                  <div *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price" class="original-price">
+                  <div *ngIf="item.product.originalPrice && item.product.originalPrice > getCurrentPrice(item.product)" class="original-price">
                     <span>{{ item.product.originalPrice || 0 }}</span>
                     <span class="currency">ج.م</span>
                   </div>
                   
                   <div class="flex items-center space-x-2 space-x-reverse">
                     <span class="text-lg font-bold text-red-600">
-                      {{ item.product.priceAfterDiscount }} ج.م
+                      {{ getItemPrice(item) }} ج.م
                     </span>
-                    <span *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price" 
+                    <span *ngIf="item.product.originalPrice && item.product.originalPrice > getCurrentPrice(item.product)" 
                           class="text-sm text-gray-500 line-through">
                       {{ item.product.originalPrice * item.quantity }} ج.م
                     </span>
                     <!-- Savings Badge -->
-                    <span *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price" 
+                    <span *ngIf="item.product.originalPrice && item.product.originalPrice > getCurrentPrice(item.product)" 
                           class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                      توفير {{ ((item.product.originalPrice - item.product.price) * item.quantity).toFixed(0) }} ج.م
+                      توفير {{ ((item.product.originalPrice - getCurrentPrice(item.product)) * item.quantity).toFixed(0) }} ج.م
                     </span>
                   </div>
                 </div>
@@ -351,9 +351,8 @@
                       <span class="mr-2 text-gray-600">جاري تحميل العناوين...</span>
                     </div>
                     <select *ngIf="!isLoadingAddresses && savedAddresses.length > 0"
-                            [(ngModel)]="selectedAddressId" 
-                            (ngModelChange)="onAddressSelect()"
-                            [ngModelOptions]="{standalone: true}"
+                            [formControl]="addressSelectionControl"
+                            (change)="onAddressSelect()"
                             class="w-full px-4 py-3 border-2 border-gray-400 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 bg-white cursor-pointer">
                       <option value="">-- اختر عنوان --</option>
                       <option *ngFor="let addr of savedAddresses" [value]="addr._id">

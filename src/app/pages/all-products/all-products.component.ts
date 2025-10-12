@@ -96,11 +96,14 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.searchQueryChangesSubject.complete();
     // Restore body scroll when component is destroyed
     document.body.style.overflow = 'auto';
   }
 
   private setupFilterListeners(): void {
+    console.log('Setting up filter listeners...');
+    
     // Listen to form changes with debounce
     this.filterForm.valueChanges
       .pipe(
@@ -108,37 +111,45 @@ export class AllProductsComponent implements OnInit, OnDestroy {
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe(() => {
+      .subscribe((formValue) => {
+        console.log('Filter form changed:', formValue);
+        console.log('Current search query:', this.searchQuery);
         this.currentPage = 1;
-        this.applyFilters();
+        this.loadProducts(); // Call API instead of client-side filtering
       });
 
     // Listen to search query changes
+    console.log('Setting up search query listener...');
     this.searchQueryChanges
       .pipe(
         takeUntil(this.destroy$),
-        debounceTime(500),
-        distinctUntilChanged()
+        debounceTime(300)
       )
-      .subscribe(() => {
+      .subscribe((query) => {
+        console.log('Search query changed after debounce:', query);
+        console.log('Current form values:', this.filterForm.value);
         this.currentPage = 1;
-        this.applyFilters();
+        console.log('About to call loadProducts...');
+        this.loadProducts(); // Call API instead of client-side filtering
       });
+    console.log('Search query listener set up successfully');
   }
 
+  private searchQueryChangesSubject = new Subject<string>();
+  
   private get searchQueryChanges() {
-    return new Subject<string>();
+    return this.searchQueryChangesSubject;
   }
 
   onSearchChange(query: string): void {
+    console.log('onSearchChange called with:', query);
     this.searchQuery = query;
+    console.log('searchQuery updated to:', this.searchQuery);
+    
+    // Trigger search immediately for better UX
+    console.log('About to call searchQueryChanges.next()');
     this.searchQueryChanges.next(query);
-    
-    // Reset to first page when searching
-    this.currentPage = 1;
-    
-    // Load products with search query
-    this.loadProducts();
+    console.log('searchQueryChanges.next() called successfully');
     
     // Close side nav after a short delay to let user see the search results
     if (query.trim().length > 2) {
@@ -149,6 +160,7 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   }
 
   loadProducts(): void {
+    console.log('loadProducts() called');
     this.loading = true;
     this.error = '';
 
@@ -159,8 +171,16 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     };
 
     // Add search query
-    if (this.searchQuery.trim()) {
-      params.search = this.searchQuery.trim();
+    console.log('Current searchQuery value:', this.searchQuery);
+    if (this.searchQuery !== undefined && this.searchQuery !== null) {
+      if (this.searchQuery.trim() !== '') {
+        params.search = this.searchQuery.trim();
+        console.log('Added search parameter:', params.search);
+      } else {
+        console.log('Search query is empty, will show all products');
+      }
+    } else {
+      console.log('Search query is undefined/null');
     }
 
     // Add filter values
@@ -176,12 +196,14 @@ export class AllProductsComponent implements OnInit, OnDestroy {
       .map(key => `${key}=${encodeURIComponent(params[key])}`)
       .join('&');
 
-
+    console.log('API Call - Query String:', queryString);
+    console.log('API Call - Params:', params);
 
     this.productService.getProductsWithFilters(queryString)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
+          console.log('API Response:', response);
           if (response.success && response.data) {
             // Check if pagination is at root level
             if (response.pagination) {
@@ -214,8 +236,10 @@ export class AllProductsComponent implements OnInit, OnDestroy {
               this.totalPages = 0;
             }
             
-            // Apply filters after loading products
-            this.applyFilters();
+            // Set filtered products to the same as products since we're doing server-side filtering
+            this.filteredProducts = this.products;
+            console.log('Products loaded:', this.products.length);
+            console.log('Total items:', this.totalItems);
           } else {
             this.error = 'حدث خطأ في تحميل المنتجات';
             this.products = [];
@@ -226,9 +250,11 @@ export class AllProductsComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Error loading products:', err);
+          console.error('Query string that failed:', queryString);
           this.error = 'حدث خطأ في تحميل المنتجات';
           this.loading = false;
           this.products = [];
+          this.filteredProducts = [];
           this.totalItems = 0;
           this.totalPages = 0;
         }
@@ -396,6 +422,12 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.totalItems = 0;
     this.totalPages = 0;
+    this.loadProducts();
+  }
+
+  applyFiltersManually(): void {
+    console.log('Manually applying filters:', this.filterForm.value);
+    this.currentPage = 1;
     this.loadProducts();
   }
 
