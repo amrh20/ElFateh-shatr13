@@ -104,12 +104,17 @@
                   <h3 class="text-lg font-semibold text-gray-800 mb-1">
                     {{ item.product.name }}
                   </h3>
-                  <p class="text-gray-600 text-sm mb-2">{{ item.product.brand || 'بدون علامة تجارية' }}</p>
+                  <p class="text-gray-600 text-sm mb-2">{{ item.product.description }}</p>
                   
                   <!-- Price -->
+                  <div *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price" class="original-price">
+                    <span>{{ item.product.originalPrice || 0 }}</span>
+                    <span class="currency">ج.م</span>
+                  </div>
+                  
                   <div class="flex items-center space-x-2 space-x-reverse">
                     <span class="text-lg font-bold text-red-600">
-                      {{ getItemPrice(item) }} ج.م
+                      {{ item.product.priceAfterDiscount }} ج.م
                     </span>
                     <span *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price" 
                           class="text-sm text-gray-500 line-through">

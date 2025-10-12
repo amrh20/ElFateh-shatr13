@@ -6,8 +6,29 @@
   </div>
 </section>
 
-<!-- Filters and Search Section -->
-<section class="bg-white border-b border-gray-200 shadow-sm">
+<!-- Mobile Search Button -->
+<div class="mobile-search-container">
+  <button 
+    (click)="openSideNav()"
+    class="mobile-search-button">
+    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    </svg>
+    <span class="search-text">بحث</span>
+  </button>
+</div>
+
+<!-- Mobile Results Info -->
+<div class="mobile-results-info">
+  <div class="text-center text-sm text-gray-600">
+    <span *ngIf="totalItems > 0">تم العثور على {{ totalItems }} منتج</span>
+    <span *ngIf="totalItems === 0 && !loading">لم يتم العثور على منتجات</span>
+ 
+  </div>
+</div>
+
+<!-- Filters and Search Section - Desktop Only -->
+<section class="bg-white border-b border-gray-200 shadow-sm desktop-filters">
   <div class="container mx-auto px-4 py-6">
     <!-- Search Bar -->
     <div class="mb-6">
@@ -199,3 +220,127 @@
     </div>
   </div>
 </section>
+
+<!-- Mobile Side Navigation -->
+<div 
+  *ngIf="isSideNavOpen"
+  class="mobile-side-nav"
+  [class.open]="isSideNavOpen"
+  (click)="onSideNavBackdropClick()">
+  
+  <!-- Backdrop -->
+  <div class="side-nav-backdrop"></div>
+  
+  <!-- Side Navigation Panel -->
+  <div 
+    class="side-nav-panel"
+    (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="side-nav-header">
+      <h2>البحث والفلترة</h2>
+      <button 
+        (click)="closeSideNav()"
+        class="close-button">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Content -->
+    <div class="side-nav-content">
+      <!-- Search Bar -->
+      <div class="form-group">
+        <label>البحث</label>
+        <div style="position: relative;">
+          <input 
+            type="text" 
+            [value]="searchQuery"
+            (input)="onSearchChange($any($event.target).value)"
+            placeholder="ابحث عن منتج..."
+            class="search-input">
+          <div style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);">
+            <svg width="20" height="20" fill="none" stroke="#9ca3af" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Form -->
+      <form [formGroup]="filterForm">
+        <!-- Subcategory Filter -->
+        <div class="form-group">
+          <label>الصنف</label>
+          <select 
+            formControlName="subcategory"
+            class="filter-select">
+            <option value="">اختر الصنف</option>
+            <option *ngFor="let subcategory of subCategories" [value]="subcategory._id || subcategory.id">
+              {{ subcategory.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Min Price Filter -->
+        <div class="form-group">
+          <label>السعر من</label>
+          <input 
+            type="number" 
+            formControlName="minPrice"
+            placeholder="0"
+            class="filter-input">
+        </div>
+
+        <!-- Max Price Filter -->
+        <div class="form-group">
+          <label>السعر إلى</label>
+          <input 
+            type="number" 
+            formControlName="maxPrice"
+            placeholder="1000"
+            class="filter-input">
+        </div>
+
+        <!-- Product Type Filter -->
+        <div class="form-group">
+          <label>نوع المنتج</label>
+          <select 
+            formControlName="productType"
+            class="filter-select">
+            <option value="">جميع الأنواع</option>
+            <option *ngFor="let type of productTypes" [value]="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+      </form>
+
+      <!-- Results Info -->
+      <div class="results-info">
+        <div class="text-sm">
+          <span *ngIf="totalItems > 0">تم العثور على {{ totalItems }} منتج</span>
+          <span *ngIf="totalItems === 0">لم يتم العثور على منتجات</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6" style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <button 
+          (click)="clearFilters(); closeSideNav()"
+          class="action-button"
+          style="color: #dc2626; border: 1px solid #dc2626; background: white;">
+          مسح البحث 
+        </button>
+        
+        <button 
+          (click)="applyFiltersAndClose()"
+          class="action-button"
+          style="background: #dc2626; color: white;">
+          تطبيق الفلاتر
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

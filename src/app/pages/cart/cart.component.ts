@@ -125,6 +125,7 @@ export class CartComponent implements OnInit {
     
     this.cartService.getCartItems().subscribe(items => {
       this.cartItems = items;
+      console.log(this.cartItems);
       this.calculateTotals();
     });
 

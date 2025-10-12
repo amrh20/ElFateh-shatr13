@@ -62,6 +62,9 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   categories: any[] = [];
   subCategories: any[] = [];
   
+  // Mobile side navigation
+  isSideNavOpen = false;
+  
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -87,11 +90,14 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     this.loadProducts();
     this.setupFilterListeners();
     this.loadCategories();
+    this.setupKeyboardListeners();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    // Restore body scroll when component is destroyed
+    document.body.style.overflow = 'auto';
   }
 
   private setupFilterListeners(): void {
@@ -133,6 +139,13 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     
     // Load products with search query
     this.loadProducts();
+    
+    // Close side nav after a short delay to let user see the search results
+    if (query.trim().length > 2) {
+      setTimeout(() => {
+        this.closeSideNav();
+      }, 1500);
+    }
   }
 
   loadProducts(): void {
@@ -389,6 +402,46 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   onAddToCart(product: Product): void {
     // العملية تتم داخل product-card component
     // لا نحتاج لاستدعاء addToCart مرة أخرى هنا
+  }
+
+  // Mobile side navigation methods
+  openSideNav(): void {
+    console.log('Opening side nav...');
+    this.isSideNavOpen = true;
+    // Allow body scroll when side nav is open so user can see results
+    document.body.style.overflow = 'auto';
+  }
+
+  closeSideNav(): void {
+    this.isSideNavOpen = false;
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+  }
+
+  toggleSideNav(): void {
+    if (this.isSideNavOpen) {
+      this.closeSideNav();
+    } else {
+      this.openSideNav();
+    }
+  }
+
+  onSideNavBackdropClick(): void {
+    this.closeSideNav();
+  }
+
+  applyFiltersAndClose(): void {
+    this.applyFilters();
+    this.closeSideNav();
+  }
+
+  private setupKeyboardListeners(): void {
+    // Listen for Escape key to close side nav
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && this.isSideNavOpen) {
+        this.closeSideNav();
+      }
+    });
   }
 
   get paginatedProducts(): Product[] {
