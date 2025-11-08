@@ -68,7 +68,7 @@ export interface User {
 
 export interface Order {
   id: string;
-  userId: number;
+  userId?: number | null | undefined;
   items: CartItem[];
   totalAmount: number;
   status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';

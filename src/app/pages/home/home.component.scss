@@ -1,23 +1,25 @@
-// Essential Swiper Styles
-/* تعديل أنماط Swiper لإظهار الأسهم خارج البطاقات */
-.categories-swiper,
-.products-swiper {
-  --swiper-navigation-size: 48px;
-  --swiper-navigation-color: #dc2626;
-  --swiper-pagination-color: #dc2626;
-  padding: 0 !important;
-  margin: 0 !important;
-  position: relative !important;
-  overflow: visible !important; /* السماح بظهور العناصر خارج حدود الحاوية */
-}
-
-.bg-gradient-hero {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+/* ===================================
+   Hero Section
+   =================================== */
+.hero-section {
   position: relative;
+  padding: 5rem 0;
+  background: var(--gradient-primary);
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(185, 28, 28, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  
+  background-color: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background-size: 200% 200%;
+  animation: gradientAnimation 15s ease infinite;
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
   &::before {
     content: '';
     position: absolute;
@@ -40,383 +42,45 @@
   }
 }
 
-/* تنسيق أسهم التنقل */
-.swiper-button-next,
-.swiper-button-prev {
-  background: white !important;
-  border: 2px solid #e5e7eb !important;
-  border-radius: 50% !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  width: 48px !important;
-  height: 48px !important;
-  z-index: 20 !important; /* زيادة z-index لضمان ظهور الأسهم فوق جميع العناصر */
-  position: absolute !important;
+.hero-float-element {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  animation: float 3s ease-in-out infinite;
   
-  &:hover {
-    background: #f3f4f6 !important;
-    border-color: #d1d5db !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  &.hero-float-element-sm {
+    width: 64px;
+    height: 64px;
   }
   
-  &::after {
-    font-size: 18px !important;
-    font-weight: bold !important;
-    color: #dc2626 !important;
+  &.hero-float-element-xs {
+    width: 48px;
+    height: 48px;
   }
 }
 
-/* تحديد مواضع الأسهم */
-.swiper-button-prev { left: -24px !important; }
-.swiper-button-next { right: -24px !important; }
-
-/* إخفاء نقاط التنقل */
-.swiper-pagination {
-  display: none !important;
+.hero-divider {
+  width: 64px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* إضافة تباعد للحاوية الرئيسية */
-.relative > swiper-container {
-  padding: 0 30px !important;
+.fw-black {
+  font-weight: 900;
 }
 
-// Essential Category Card Styles
-.category-card {
-  position: relative;
-  overflow: hidden;
-  animation: cardEntrance 0.6s ease-out forwards;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  background-color: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease;
-  
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
-  
-  &:hover {
-    transform: translateY(-8px);
-    border-color: rgba(220, 38, 38, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(220, 38, 38, 0.1);
-    
-    .category-icon {
-      transform: rotate(5deg) scale(1.1);
-      background: linear-gradient(135deg, #fecaca, #fca5a5);
-    }
-    
-    .category-badge {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
-    }
-    
-    .category-button {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 35px rgba(220, 38, 38, 0.3);
-    }
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #dc2626, transparent);
-    z-index: 1;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-  
-  &:hover::before {
-    opacity: 1;
-  }
+.text-white-90 {
+  color: rgba(255, 255, 255, 0.9);
 }
 
-// Essential Animations
-@keyframes cardEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(30px) scale(0.9);
-  }
-  50% {
-    transform: translateY(-5px) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.mw-800 {
+  max-width: 800px;
 }
 
-// Enhanced responsive design for home page
-@keyframes cardEntrance {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out;
-}
-
-// Essential Component Styles
-.category-icon {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
-  svg {
-    transition: all 0.3s ease;
-  }
-}
-
-.heading-2 {
-  @apply text-3xl font-bold mb-2;
-  color: #1a202c;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 0.5rem;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 60%;
-    height: 3px;
-    background: linear-gradient(90deg, #dc2626, transparent);
-    border-radius: 3px;
-  }
-}
-
-.category-badge {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  backdrop-filter: blur(8px);
-}
-
-.category-button {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
-  svg {
-    transition: transform 0.3s ease;
-  }
-  
-  &:hover svg {
-    transform: translateX(3px);
-  }
-}
-
-.category-image {
-  position: relative;
-  overflow: hidden;
-}
-
-// Hero section responsive improvements
-@media (max-width: 768px) {
-  .bg-gradient-hero {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  
-  h1 {
-    font-size: 2.5rem !important;
-    line-height: 1.2 !important;
-  }
-  
-  p {
-    font-size: 1rem !important;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .bg-gradient-hero {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-  
-  h1 {
-    font-size: 2rem !important;
-  }
-  
-  p {
-    font-size: 0.9rem !important;
-  }
-}
-
-// Categories section responsive improvements
-@media (max-width: 1024px) {
-  .px-16 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .py-20 {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-  
-  .mb-16 {
-    margin-bottom: 2rem;
-  }
-  
-  h2 {
-    font-size: 2rem !important;
-  }
-  
-  p {
-    font-size: 1rem !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .py-20 {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-  
-  .mb-16 {
-    margin-bottom: 1.5rem;
-  }
-  
-  h2 {
-    font-size: 1.75rem !important;
-  }
-  
-  p {
-    font-size: 0.9rem !important;
-  }
-}
-
-// Product swipers responsive improvements
-@media (max-width: 768px) {
-  .products-swiper {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .mb-12 {
-    margin-bottom: 2rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .products-swiper {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  
-  .mb-12 {
-    margin-bottom: 1.5rem;
-  }
-}
-
-// Category cards responsive improvements
-.category-card {
-  @media (max-width: 768px) {
-    .category-image img {
-      height: 12rem !important;
-    }
-    
-    .p-6 {
-      padding: 1rem;
-    }
-    
-    h3 {
-      font-size: 1.125rem !important;
-    }
-    
-    p {
-      font-size: 0.875rem !important;
-    }
-  }
-  
-  @media (max-width: 640px) {
-    .category-image img {
-      height: 10rem !important;
-    }
-    
-    .p-6 {
-      padding: 0.75rem;
-    }
-    
-    h3 {
-      font-size: 1rem !important;
-    }
-    
-    p {
-      font-size: 0.8rem !important;
-    }
-    
-    .category-button {
-      padding: 0.75rem 1rem !important;
-      font-size: 0.875rem !important;
-    }
-  }
-}
-
-// Swiper navigation responsive improvements
-@media (max-width: 768px) {
-  .swiper-button-next,
-  .swiper-button-prev {
-    width: 2rem !important;
-    height: 2rem !important;
-  }
-  
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 1rem !important;
-  }
-}
-
-@media (max-width: 640px) {
-  .swiper-button-next,
-  .swiper-button-prev {
-    width: 1.5rem !important;
-    height: 1.5rem !important;
-  }
-  
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 0.875rem !important;
-  }
-}
-
-.from-red-500 {
-  background-color: #dc2626; 
-}
-
-.to-red-600 {
-  background-color: #dc2626; 
-}
-
-// ============================================
-// Current Order Section - Custom SCSS
-// ============================================
-
+/* ===================================
+   Current Order Section
+   =================================== */
 .current-order-section {
   padding: 1rem 0;
   background: linear-gradient(90deg, #eff6ff 0%, #e0e7ff 100%);
@@ -425,13 +89,13 @@
   .current-order-card {
     background: white;
     border-radius: 0.75rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
     padding: 1.25rem;
     border: 1px solid #dbeafe;
     transition: all 0.3s ease;
     
     &:hover {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow-lg);
     }
   }
   
@@ -442,13 +106,12 @@
     justify-content: space-between;
     gap: 1.25rem;
     
-    @media (min-width: 1024px) {
+    @media (min-width: 992px) {
       flex-direction: row;
       align-items: center;
     }
   }
   
-  // Order Info Section
   .order-info {
     display: flex;
     align-items: center;
@@ -467,9 +130,8 @@
       flex-shrink: 0;
       animation: pulse-icon 2s ease-in-out infinite;
       
-      .icon {
-        width: 1.5rem;
-        height: 1.5rem;
+      i {
+        font-size: 1.5rem;
         color: white;
       }
     }
@@ -491,17 +153,17 @@
         font-family: 'Courier New', monospace;
         direction: ltr;
         text-align: right;
+        margin: 0;
       }
     }
   }
   
-  // Status & Price Section
   .order-status-price {
     display: flex;
     align-items: center;
     gap: 1.5rem;
     
-    @media (min-width: 1024px) {
+    @media (min-width: 992px) {
       gap: 2rem;
     }
     
@@ -546,9 +208,8 @@
           transform: rotate(180deg);
         }
         
-        .refresh-icon {
-          width: 1rem;
-          height: 1rem;
+        i {
+          font-size: 1rem;
         }
       }
     }
@@ -559,16 +220,17 @@
       height: 3rem;
       background-color: #e5e7eb;
       
-      @media (min-width: 1024px) {
+      @media (min-width: 992px) {
         display: block;
       }
     }
     
     .price-amount {
       font-weight: 700;
-      color: #dc2626;
+      color: var(--primary-600);
       font-size: 1.25rem;
       line-height: 1;
+      margin: 0;
       
       .currency {
         font-size: 0.875rem;
@@ -577,41 +239,38 @@
     }
   }
   
-  // Track Button
   .track-order-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(90deg, #dc2626 0%, #b91c1c 100%);
+    background: var(--gradient-primary);
     color: white;
     padding: 0.875rem 1.5rem;
     border-radius: 0.5rem;
     font-weight: 700;
     font-size: 0.875rem;
     box-shadow: 0 4px 6px -1px rgba(220, 38, 38, 0.3);
-    text-decoration: none;
     transition: all 0.3s ease;
     width: 100%;
     
-    @media (min-width: 1024px) {
+    @media (min-width: 992px) {
       width: auto;
     }
     
     &:hover {
-      background: linear-gradient(90deg, #b91c1c 0%, #991b1b 100%);
+      background: var(--gradient-hover);
       box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
       transform: scale(1.05);
+      color: white;
     }
     
-    .btn-icon {
-      width: 1.25rem;
-      height: 1.25rem;
+    i {
+      font-size: 1.25rem;
     }
   }
 }
 
-// Pulse Animation for Icon
 @keyframes pulse-icon {
   0%, 100% {
     opacity: 1;
@@ -623,8 +282,482 @@
   }
 }
 
-// Responsive adjustments
+/* ===================================
+   Categories Section
+   =================================== */
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.text-gray-600 {
+  color: #4b5563;
+}
+
+.category-card {
+  position: relative;
+  overflow: hidden;
+  animation: cardEntrance 0.6s ease-out forwards;
+  border: 2px solid rgba(0, 0, 0, 0.05) !important;
+  border-radius: 1rem !important;
+  box-shadow: var(--shadow-lg) !important;
+  transition: all 0.5s ease;
+  
+  &:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-200) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(220, 38, 38, 0.1) !important;
+    
+    .category-icon-box {
+      transform: rotate(5deg) scale(1.1);
+      background: linear-gradient(135deg, #fecaca, #fca5a5);
+    }
+    
+    .category-badge .badge {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(220, 38, 38, 0.3);
+    }
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-600), transparent);
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.category-image {
+  position: relative;
+  overflow: hidden;
+  
+  .category-img {
+    transition: transform 0.7s ease;
+    object-fit: cover;
+  }
+  
+  &:hover .category-img {
+    transform: scale(1.1);
+  }
+}
+
+.category-badge {
+  .badge {
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    background: var(--gradient-primary) !important;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+}
+
+.category-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.category-card:hover .category-overlay {
+  opacity: 1;
+}
+
+.category-icon-box {
+  width: 48px;
+  height: 48px;
+  background: var(--primary-50);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  
+  i {
+    font-size: 1.5rem;
+    color: var(--primary-600);
+  }
+}
+
+/* ===================================
+   Swiper Customization
+   =================================== */
+.categories-swiper,
+.products-swiper {
+  --swiper-navigation-size: 48px;
+  --swiper-navigation-color: var(--primary-600);
+  --swiper-pagination-color: var(--primary-600);
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all 0.3s ease !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 48px !important;
+  height: 48px !important;
+  z-index: 20 !important;
+  position: absolute !important;
+  
+  &:hover {
+    background: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+  
+  &::after {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: var(--primary-600) !important;
+  }
+}
+
+.swiper-button-prev { left: -24px !important; }
+.swiper-button-next { right: -24px !important; }
+
+.swiper-pagination {
+  display: none !important;
+}
+
+/* ===================================
+   Why Choose Us Section
+   =================================== */
+.why-choose-section {
+  padding: 6rem 0;
+  position: relative;
+  background-color: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background-size: 200% 200%;
+  animation: gradientAnimation 15s ease infinite;
+  @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  .floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 3s ease-in-out infinite;
+    backdrop-filter: blur(2px);
+    
+    &.floating-shape-lg {
+      width: 160px;
+      height: 160px;
+      top: 5rem;
+      left: 4rem;
+    }
+    
+    &.floating-shape-md {
+      width: 128px;
+      height: 128px;
+      bottom: 5rem;
+      right: 4rem;
+    }
+    
+    &.floating-shape-xl {
+      width: 256px;
+      height: 256px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.05;
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  }
+  
+  .grid-pattern {
+    opacity: 0.1;
+    background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0);
+    background-size: 40px 40px;
+  }
+}
+
+.feature-icon-lg {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+}
+
+.opacity-90 {
+  opacity: 0.9;
+}
+
+.feature-card {
+  transition: all 0.5s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.feature-icon-container {
+  width: 96px;
+  height: 96px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(12px);
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  .feature-card:hover & {
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+  }
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease;
+  
+  i {
+    font-size: 2rem;
+    color: white;
+  }
+  
+  .feature-card:hover & {
+    transform: rotate(12deg);
+  }
+}
+
+.feature-icon-red {
+  background: linear-gradient(135deg, #f87171, #dc2626);
+}
+
+.feature-icon-green {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+
+.feature-icon-blue {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+.feature-badge {
+  background: #fbbf24;
+  color: #78350f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.feature-badge-green {
+  background: #34d399;
+  color: #064e3b;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.feature-badge-blue {
+  background: #60a5fa;
+  color: #1e3a8a;
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.feature-line {
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, white, transparent);
+  transition: width 0.5s ease;
+  
+  .feature-card:hover & {
+    width: 64px;
+  }
+}
+
+.btn-primary-inverse {
+  background: white !important;
+  color: var(--primary-600) !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--primary-50) !important;
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+.text-white-80 {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===================================
+   Heading Styles
+   =================================== */
+.heading-2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-600), transparent);
+    border-radius: 3px;
+  }
+}
+
+/* ===================================
+   Responsive Adjustments
+   =================================== */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 3rem 0;
+    
+    h1 {
+      font-size: 2.5rem !important;
+      line-height: 1.2 !important;
+    }
+    
+    p {
+      font-size: 1rem !important;
+    }
+  }
+  
+  .why-choose-section {
+    padding: 4rem 0;
+  }
+  
+  .heading-2 {
+    font-size: 1.5rem;
+  }
+  
+  .category-card {
+    .category-image {
+      .category-img {
+        height: 12rem !important;
+      }
+    }
+    
+    .card-body {
+      padding: 1rem !important;
+    }
+    
+    h3 {
+      font-size: 1.125rem !important;
+    }
+    
+    p {
+      font-size: 0.875rem !important;
+    }
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 32px !important;
+    height: 32px !important;
+    
+    &::after {
+      font-size: 16px !important;
+    }
+  }
+}
+
 @media (max-width: 640px) {
+  .hero-section {
+    padding: 2rem 0;
+    
+    h1 {
+      font-size: 2rem !important;
+    }
+    
+    p {
+      font-size: 0.9rem !important;
+    }
+  }
+  
+  .category-card {
+    .category-image {
+      .category-img {
+        height: 10rem !important;
+      }
+    }
+    
+    .card-body {
+      padding: 0.75rem !important;
+    }
+    
+    h3 {
+      font-size: 1rem !important;
+    }
+    
+    p {
+      font-size: 0.8rem !important;
+    }
+    
+    .btn {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.875rem !important;
+    }
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 24px !important;
+    height: 24px !important;
+    
+    &::after {
+      font-size: 14px !important;
+    }
+  }
+  
   .current-order-section {
     .current-order-card {
       padding: 1rem;
@@ -635,9 +768,8 @@
         width: 2.5rem;
         height: 2.5rem;
         
-        .icon {
-          width: 1.25rem;
-          height: 1.25rem;
+        i {
+          font-size: 1.25rem;
         }
       }
       

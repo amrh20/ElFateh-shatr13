@@ -1,297 +1,172 @@
-<div class="bg-gray-50 min-h-screen py-6" *ngIf="product">
-  <div class="container mx-auto px-4 max-w-7xl">
-    <!-- Breadcrumb -->
-    <nav class="mb-6 overflow-x-auto">
-      <ol class="flex items-center space-x-2 space-x-reverse text-sm text-gray-600 whitespace-nowrap">
-        <li><a routerLink="/home" class="hover:text-red-600 transition-colors">الرئيسية</a></li>
-        <li>/</li>
-        <li><a routerLink="/categories" class="hover:text-red-600 transition-colors">الأصناف</a></li>
-        <li>/</li>
-        <li><a [routerLink]="['/categories']" class="hover:text-red-600 transition-colors">{{ product.category }}</a></li>
-        <li>/</li>
-        <li class="text-gray-800 truncate max-w-[150px] sm:max-w-none">{{ product.name }}</li>
+<div class="product-details-page py-5" *ngIf="product">
+  <div class="container-xxl">
+    <nav class="product-breadcrumb" aria-label="breadcrumb">
+      <ol class="breadcrumb justify-content-center justify-content-lg-start mb-4">
+        <li class="breadcrumb-item"><a routerLink="/home">الرئيسية</a></li>
+        <li class="breadcrumb-item"><a routerLink="/categories">الأصناف</a></li>
+        <li class="breadcrumb-item" *ngIf="product?.category">
+          <a [routerLink]="['/categories']">{{ product.category }}</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
       </ol>
     </nav>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Product Images -->
-      <div class="space-y-4">
-        <!-- Main Image -->
-        <div class="bg-white rounded-xl overflow-hidden border border-gray-200">
-          <div class="product-image-container group">
-            <div class="image-wrapper">
-              <img [src]="selectedImage" [alt]="product.name"
-                   (click)="openLightbox(selectedImage)"
-                   class="w-full h-auto object-contain">
-
-              <!-- Zoom Icon Overlay -->
-              <div class="zoom-overlay"
-                   (click)="openLightbox(selectedImage)"
-                   title="انقر لتكبير الصورة">
-                <div class="zoom-icon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                  </svg>
-                </div>
-              </div>
-
-              <!-- Discount Badge -->
-              <div *ngIf="hasDiscount()"
-                   class="absolute top-3 right-3 bg-red-600 text-white px-3 py-1.5 rounded-full text-sm font-bold z-10">
-                -{{ calculateDiscountPercentage() }}%
-              </div>
-            </div>
+    <div class="row g-4">
+      <!-- Product gallery -->
+      <div class="col-lg-6">
+        <div class="product-gallery card border-0 shadow-sm mb-3">
+          <div class="product-gallery__image position-relative">
+            <img [src]="selectedImage" [alt]="product?.name" (click)="openLightbox(selectedImage)" class="img-fluid" />
+            <button type="button" class="zoom-trigger btn btn-light btn-sm rounded-circle" (click)="openLightbox(selectedImage)">
+              <i class="pi pi-search-plus"></i>
+            </button>
+            <span *ngIf="hasDiscount()" class="badge bg-danger product-badge">-{{ calculateDiscountPercentage() }}%</span>
           </div>
         </div>
 
-        <!-- Thumbnail Images -->
-        <div class="flex space-x-2 space-x-reverse overflow-x-auto pb-2">
-          <img *ngFor="let image of product.images; let i = index"
-               [src]="image" [alt]="product.name + ' ' + (i + 1)"
-               (click)="selectedImage = image"
-               (dblclick)="openLightbox(image)"
-               [class.border-red-600]="selectedImage === image"
-               class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-gray-200 hover:border-red-600 transition-all duration-300 hover:scale-105 flex-shrink-0 bg-white"
-               title="انقر مرة لتحديد الصورة، انقر مرتين لفتحها">
+        <div class="product-thumbs d-flex flex-wrap gap-2">
+          <button
+            type="button"
+            class="thumb-item btn p-0"
+            *ngFor="let image of product?.images; let i = index"
+            [class.active]="selectedImage === image"
+            (click)="selectedImage = image"
+            (dblclick)="openLightbox(image)"
+          >
+            <img [src]="image" [alt]="product?.name + ' ' + (i + 1)" class="img-fluid" />
+          </button>
         </div>
       </div>
 
-      <!-- Product Info -->
-      <div class="space-y-6">
-        <!-- Product Header -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200">
-          <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-3 leading-tight">{{ product.name }}</h1>
-          <p class="text-gray-600 text-base leading-relaxed">{{ product.description }}</p>
-        </div>
-
-        <!-- Price Section -->
-        <div class="bg-white rounded-xl p-6 border border-gray-200">
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-baseline gap-3">
-              <span class="text-3xl font-bold text-red-600">{{ getCurrentPrice() }} ج.م</span>
-              <span *ngIf="hasDiscount()"
-                    class="text-lg text-gray-400 line-through">{{ product.price }} ج.م</span>
-            </div>
-
-            <!-- Savings Info -->
-            <div *ngIf="hasDiscount()" class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex items-center gap-2 text-sm text-green-700 font-semibold bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
-                توفير {{ getDiscountAmount() }} ج.م
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quantity and Actions -->
-        <div class="bg-white rounded-xl p-6 space-y-6 border border-gray-200">
-          <!-- Quantity Selector -->
-          <div class="space-y-3">
-            <label class="block text-sm font-semibold text-gray-700">الكمية</label>
-            <div class="flex items-center border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-50 w-fit">
-              <button (click)="decreaseQuantity()"
-                      [disabled]="quantity <= 1"
-                      class="w-12 h-12 flex items-center justify-center hover:bg-red-50 disabled:opacity-30 disabled:hover:bg-gray-50 transition-colors">
-                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"></path>
-                </svg>
-              </button>
-              <div class="w-16 h-12 flex items-center justify-center bg-white border-x-2 border-gray-300">
-                <span class="text-lg font-bold text-gray-900">{{ quantity }}</span>
-              </div>
-              <button (click)="increaseQuantity()"
-                      class="w-12 h-12 flex items-center justify-center hover:bg-red-50 transition-colors">
-                <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="space-y-3">
-            <button (click)="addToCart()"
-                    [disabled]="!product.stock"
-                    class="action-btn w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300">
-              <div class="flex items-center justify-center gap-3" style="padding: 10px;">
-                <svg class="btn-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                </svg>
-                <span class="btn-text text-base">{{ product.stock ? 'أضف للسلة' : 'غير متوفر' }}</span>
-              </div>
-            </button>
-
-            <button (click)="toggleWishlist()"
-                    [class.bg-red-50]="isInWishlist"
-                    [class.border-red-400]="isInWishlist"
-                    [class.bg-white]="!isInWishlist"
-                    [class.border-gray-300]="!isInWishlist"
-                    class="action-btn w-full border-2 py-2 rounded-lg hover:bg-gray-50 transition-all duration-300">
-              <div class="flex items-center justify-center gap-3" style="padding: 10px;">
-                <svg class="btn-icon w-5 h-5 transition-colors"
-                     [class.text-red-600]="isInWishlist"
-                     [class.text-gray-400]="!isInWishlist"
-                     [attr.fill]="isInWishlist ? 'currentColor' : 'none'"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                </svg>
-                <span class="btn-text font-semibold text-sm"
-                      [class.text-red-600]="isInWishlist"
-                      [class.text-gray-700]="!isInWishlist">
-                  {{ isInWishlist ? 'في المفضلة' : 'أضف للمفضلة' }}
+      <!-- Product summary -->
+      <div class="col-lg-6">
+        <!-- Product Title & Brand -->
+        <div class="product-header card border-0 shadow-sm mb-3">
+          <div class="card-body">
+            <div class="mb-3">
+              <h1 class="product-title-main mb-2">{{ product?.name }}</h1>
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <span *ngIf="product?.brand" class="badge-brand">
+                  <i class="pi pi-tag"></i>
+                  <span>{{ product.brand }}</span>
                 </span>
+                <span *ngIf="product?.category" class="badge-category">{{ product.category }}</span>
               </div>
-            </button>
+            </div>
+            <p class="product-description-text mb-0">{{ product?.description }}</p>
           </div>
         </div>
 
-        <!-- Specifications -->
-        <div *ngIf="product.specifications" class="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-            </svg>
-            المواصفات
-          </h3>
-          <div class="space-y-2">
-            <div *ngFor="let spec of getSpecifications(); let last = last"
-                 class="flex justify-between items-center py-3 border-b last:border-0 border-gray-100 hover:bg-gray-50 px-3 rounded-lg transition-colors">
-              <span class="text-sm text-gray-600 font-medium">{{ spec.key }}</span>
-              <span class="text-sm text-gray-800 font-semibold text-left">{{ spec.value }}</span>
+
+        <div class="product-actions card border-0 shadow-sm mb-3">
+          <div class="card-body">
+            <!-- Quantity and Price Row -->
+            <div class="quantity-price-row mb-4">
+              <div class="quantity-section">
+                <label class="form-label fw-semibold mb-2 d-flex align-items-center gap-2">
+                  <i class="pi pi-box"></i>
+                  <span>الكمية</span>
+                </label>
+                <div class="quantity-controls">
+                  <button class="qty-btn" type="button" (click)="decreaseQuantity()" [disabled]="quantity <= 1">
+                    <i class="pi pi-minus"></i>
+                  </button>
+                  <span class="qty-value">{{ quantity }}</span>
+                  <button class="qty-btn" type="button" (click)="increaseQuantity()">
+                    <i class="pi pi-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="price-section">
+                <label class="form-label fw-semibold mb-2 d-flex align-items-center gap-2">
+                  <i class="pi pi-money-bill"></i>
+                  <span>الإجمالي</span>
+                </label>
+                <div class="total-price">
+                  <span class="price-amount">{{ getCurrentPrice() * quantity }}</span>
+                  <span class="price-currency">ج.م</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons-grid">
+              <button 
+                class="btn-add-cart" 
+                type="button" 
+                (click)="addToCart()" 
+                [disabled]="!product?.stock"
+              >
+                <div class="btn-content">
+                  <i class="pi pi-shopping-cart"></i>
+                  <span>{{ product?.stock ? 'أضف للسلة' : 'غير متوفر' }}</span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                class="btn-wishlist"
+                [class.active]="isInWishlist"
+                (click)="toggleWishlist()"
+              >
+                <div class="btn-content">
+                  <i class="pi pi-heart" [class.pi-heart-fill]="isInWishlist"></i>
+                  <span>{{ isInWishlist ? 'في المفضلة' : 'أضف للمفضلة' }}</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div *ngIf="product?.specifications" class="product-specs card border-0 shadow-sm">
+          <div class="card-body">
+            <h3 class="section-title d-flex align-items-center gap-2 mb-3">
+              <i class="pi pi-list-check text-danger"></i>
+              <span>المواصفات</span>
+            </h3>
+            <ul class="specs-list list-unstyled mb-0">
+              <li *ngFor="let spec of getSpecifications()" class="d-flex justify-content-between align-items-center">
+                <span class="spec-key">{{ spec.key }}</span>
+                <span class="spec-value">{{ spec.value }}</span>
+              </li>
+            </ul>
+          </div>
+        </div> -->
+      </div>
+    </div>
+
+    <div class="related-products mt-5" *ngIf="relatedProducts.length > 0">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="pi pi-star-fill text-danger fs-5"></i>
+            <h2 class="section-heading mb-0">منتجات مشابهة قد تعجبك</h2>
+          </div>
+          <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-3" *ngFor="let relatedProduct of relatedProducts">
+              <app-product-card [product]="relatedProduct"></app-product-card>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Related Products Section -->
-    <div *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 0" class="mt-12">
-      <div class="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
-         قد يعجبك
-        </h2>
-        
-        <!-- Products Slider -->
-        <div class="relative">
-          <!-- Loading State -->
-          <div *ngIf="isLoadingRelatedProducts" class="flex items-center justify-center py-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-            <span class="mr-3 text-gray-600">جاري تحميل المنتجات ذات الصلة...</span>
-          </div>
-          
-          <!-- Navigation Buttons -->
-          <button *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 3"
-                  (click)="scrollSlider('left')"
-                  class="slider-nav-btn slider-nav-left">
-            <svg class="w-5 h-5 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </button>
-          
-          <button *ngIf="!isLoadingRelatedProducts && relatedProducts.length > 3"
-                  (click)="scrollSlider('right')"
-                  class="slider-nav-btn slider-nav-right">
-            <svg class="w-5 h-5 text-gray-600 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </button>
-          
-          <!-- Products Slider Container -->
-          <div *ngIf="!isLoadingRelatedProducts" 
-               #relatedProductsSlider
-               class="flex overflow-x-auto scroll-smooth gap-4 pb-4 hide-scrollbar">
-            <div *ngFor="let relatedProduct of relatedProducts" 
-                 class="flex-shrink-0 w-48 md:w-56 lg:w-64 bg-gray-50 rounded-lg p-4 hover:shadow-md transition-all duration-300 cursor-pointer group"
-                 [routerLink]="['/product', relatedProduct._id || relatedProduct.id]">
-              
-              <!-- Product Image -->
-              <div class="relative mb-3">
-                <img [src]="relatedProduct.images?.[0] || relatedProduct.image" 
-                     [alt]="relatedProduct.name"
-                     class="w-full h-40 object-cover rounded-lg bg-white">
-                
-                <!-- Discount Badge -->
-                <div *ngIf="relatedProduct.originalPrice && relatedProduct.originalPrice > relatedProduct.price"
-                     class="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
-                  -{{ calculateRelatedProductDiscountPercentage(relatedProduct) }}%
-                </div>
-              </div>
-              
-              <!-- Product Info -->
-              <div class="space-y-2">
-                <h3 class="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-red-600 transition-colors">
-                  {{ relatedProduct.name }}
-                </h3>
-                
-                <!-- Price -->
-                <div class="flex flex-col">
-                  <span class="text-lg font-bold text-red-600">
-                    {{ relatedProduct.priceAfterDiscount || relatedProduct.price }} ج.م
-                  </span>
-                  <span *ngIf="relatedProduct.originalPrice && relatedProduct.originalPrice > relatedProduct.price"
-                        class="text-xs text-gray-400 line-through">
-                    {{ relatedProduct.originalPrice }} ج.م
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- No Related Products Message -->
-    <!-- <div *ngIf="!isLoadingRelatedProducts && relatedProducts.length === 0 && product" class="mt-12">
-      <div class="bg-white rounded-xl p-6 border border-gray-200 text-center">
-        <div class="text-gray-500 mb-4">
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-          </svg>
-          <h3 class="text-lg font-semibold text-gray-700 mb-2">لا توجد منتجات ذات صلة</h3>
-          <p class="text-sm text-gray-500">لم نتمكن من العثور على منتجات أخرى من نفس الفئة</p>
-        </div>
-      </div>
-    </div> -->
   </div>
 </div>
 
-<!-- Loading State -->
-<div *ngIf="!product" class="flex items-center justify-center min-h-screen">
+<div *ngIf="!product" class="loading-state py-5">
   <div class="text-center">
-    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-    <p class="text-gray-600">جاري التحميل...</p>
+    <div class="spinner-border text-danger mb-3" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="text-muted">جاري التحميل...</p>
   </div>
 </div>
 
-<!-- Lightbox Modal -->
-<div *ngIf="showLightbox"
-     class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-     (click)="closeLightbox()">
-
-  <div class="relative w-full max-w-4xl" (click)="$event.stopPropagation()">
-    <!-- Close Button -->
-    <button (click)="closeLightbox()"
-            class="absolute -top-2 -right-2 z-10 bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-all duration-300 hover:scale-105 active:scale-95">
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
-
-    <!-- Main Image -->
-    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-      <img [src]="lightboxImage" [alt]="product?.name"
-           class="w-full h-auto max-h-[75vh] object-contain rounded-lg mx-auto">
-    </div>
-
-    <!-- Product Name -->
-    <div class="mt-4 text-center bg-black/40 backdrop-blur-sm rounded-lg p-3">
-      <p class="text-white text-base font-semibold">{{ product?.name }}</p>
-    </div>
+<div *ngIf="showLightbox" class="lightbox-modal" (click)="closeLightbox()">
+  <div class="lightbox-dialog" (click)="$event.stopPropagation()">
+    <button type="button" class="btn-close btn-close-white lightbox-close" (click)="closeLightbox()"></button>
+    <img [src]="lightboxImage" [alt]="product?.name" class="img-fluid" />
+    <div class="lightbox-caption mt-3 text-white text-center fw-semibold">{{ product?.name }}</div>
   </div>
 </div>

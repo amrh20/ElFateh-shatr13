@@ -1,21 +1,65 @@
-/* Swiper CSS */
+/* ===================================
+   Swiper CSS - @use rules must come first
+   =================================== */
 @use 'swiper/css';
 @use 'swiper/css/navigation';
 @use 'swiper/css/pagination';
 
+/* ===================================
+   PrimeNG Theme & Icons
+   =================================== */
+@import 'primeng/resources/themes/aura-light-indigo/theme.css';
+@import 'primeng/resources/primeng.min.css';
+@import 'primeicons/primeicons.css';
 
-/* Import Cairo font with enhanced weights */
+/* ===================================
+   PrimeNG Color Customization (Red Theme)
+   =================================== */
+:root {
+  /* Override PrimeNG primary colors to red */
+  --primary-50: #fef2f2;
+  --primary-100: #fee2e2;
+  --primary-200: #fecaca;
+  --primary-300: #fca5a5;
+  --primary-400: #f87171;
+  --primary-500: #ef4444;
+  --primary-600: #dc2626;
+  --primary-700: #b91c1c;
+  --primary-800: #991b1b;
+  --primary-900: #7f1d1d;
+  
+  /* PrimeNG specific variables override */
+  --p-primary-50: #fef2f2;
+  --p-primary-100: #fee2e2;
+  --p-primary-200: #fecaca;
+  --p-primary-300: #fca5a5;
+  --p-primary-400: #f87171;
+  --p-primary-500: #ef4444;
+  --p-primary-600: #dc2626;
+  --p-primary-700: #b91c1c;
+  --p-primary-800: #991b1b;
+  --p-primary-900: #7f1d1d;
+  
+  /* Override PrimeNG component colors */
+  --p-primary-color: #dc2626;
+  --p-primary-contrast-color: #ffffff;
+  --p-primary-hover-color: #b91c1c;
+  --p-primary-active-color: #991b1b;
+}
+
+/* ===================================
+   Bootstrap (already in angular.json)
+   =================================== */
+
+/* ===================================
+   Arabic Fonts
+   =================================== */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
-
-/* Import Tajawal font for better Arabic readability */
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
 
-/* Tailwind CSS - Use proper import order */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Custom styles for RTL support and Cairo font */
+/* ===================================
+   Global RTL Support & Base Styles
+   =================================== */
 html {
   direction: rtl;
   font-family: 'Cairo', sans-serif;
@@ -55,6 +99,26 @@ p {
   font-family: 'Tajawal', 'Cairo', sans-serif;
 }
 
+/* ===================================
+   Custom Design System Colors (Enhanced)
+   =================================== */
+/* Already defined above with PrimeNG overrides */
+:root {
+  
+  --gradient-primary: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  --gradient-hover: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(220, 38, 38, 0.3);
+  --shadow-glow-lg: 0 0 30px rgba(220, 38, 38, 0.4);
+}
+
+/* ===================================
+   Top Border Accent
+   =================================== */
 body::before {
   content: '';
   position: absolute;
@@ -62,12 +126,14 @@ body::before {
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+  background: var(--gradient-primary);
   z-index: 100;
   box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
 }
 
-/* Enhanced scrollbar */
+/* ===================================
+   Custom Scrollbar
+   =================================== */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -78,7 +144,7 @@ body::before {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: var(--gradient-primary);
   border-radius: 10px;
   transition: all 0.3s ease;
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -86,12 +152,14 @@ body::before {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  background: var(--gradient-hover);
   transform: scale(1.1);
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Enhanced animations */
+/* ===================================
+   Custom Animations
+   =================================== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -143,25 +211,54 @@ body::before {
   }
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-8px) rotate(1deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-8px) rotate(-1deg);
-  }
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* Animation classes */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(1deg); }
+  50% { transform: translateY(-12px) rotate(0deg); }
+  75% { transform: translateY(-8px) rotate(-1deg); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes flipIn {
+  0% { opacity: 0; transform: perspective(400px) rotateY(90deg); }
+  40% { transform: perspective(400px) rotateY(-20deg); }
+  60% { transform: perspective(400px) rotateY(10deg); }
+  80% { transform: perspective(400px) rotateY(-5deg); }
+  100% { opacity: 1; transform: perspective(400px) rotateY(0deg); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3); }
+  50% { opacity: 1; transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Animation utility classes */
 .fade-in-up {
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -178,7 +275,61 @@ body::before {
   animation: rotateIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* Page Transition Classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-zoom-in {
+  animation: zoomIn 0.5s ease-out;
+}
+
+.animate-flip-in {
+  animation: flipIn 0.8s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===================================
+   Page Transition Classes
+   =================================== */
 .page-enter {
   opacity: 0;
   transform: translateY(20px);
@@ -200,12 +351,13 @@ body::before {
   transition: opacity 300ms, transform 300ms;
 }
 
-/* Additional page transition styles */
 .page-transitioning {
-  overflow: hidden; /* Prevent scrolling during transitions */
+  overflow: hidden;
 }
 
-/* Element transition utilities */
+/* ===================================
+   Transition Utilities
+   =================================== */
 .transition-all-fast {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -232,7 +384,9 @@ body::before {
               border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced button animations */
+/* ===================================
+   Custom Button Styles
+   =================================== */
 .pulse-glow {
   animation: pulseGlow 2s ease-in-out infinite;
 }
@@ -264,14 +418,13 @@ body::before {
   transition: transform 0.1s;
 }
 
-/* Primary Button Styles - Ensure these work consistently */
 .btn-primary {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  color: white;
+  background: var(--gradient-primary);
+  color: white !important;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -279,7 +432,7 @@ body::before {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  background: var(--gradient-hover);
   box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transform: translateY(-2px);
 }
@@ -289,34 +442,35 @@ body::before {
   box-shadow: 0 5px 10px -3px rgba(220, 38, 38, 0.3);
 }
 
-/* Secondary Button Styles */
 .btn-secondary {
   background: white;
-  color: #dc2626;
+  color: var(--primary-600) !important;
   font-weight: 600;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #fecaca;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--primary-200);
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background: #fef2f2;
-  color: #b91c1c;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background: var(--primary-50);
+  color: var(--primary-700) !important;
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
-  border-color: rgba(220, 38, 38, 0.3);
+  border-color: var(--primary-300);
 }
 
 .btn-secondary:active {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 5px 10px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
-/* Enhanced loading states */
+/* ===================================
+   Loading States
+   =================================== */
 .loading {
   position: relative;
   overflow: hidden;
@@ -333,16 +487,9 @@ body::before {
   animation: shimmer 1.5s infinite;
 }
 
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* Enhanced typography */
+/* ===================================
+   Typography Classes
+   =================================== */
 .heading-1 {
   font-size: 2.25rem;
   line-height: 2.5rem;
@@ -404,7 +551,9 @@ body::before {
   color: #6b7280;
 }
 
-/* Enhanced interactive elements */
+/* ===================================
+   Interactive Elements
+   =================================== */
 .interactive {
   cursor: pointer;
   transition: all 0.3s ease;
@@ -414,13 +563,15 @@ body::before {
   transform: scale(1.05);
 }
 
-/* Enhanced form elements */
+/* ===================================
+   Form Elements
+   =================================== */
 .form-group {
   margin-bottom: 0.5rem;
 }
 
 .form-error {
-  color: #dc2626;
+  color: var(--primary-600);
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
@@ -431,7 +582,9 @@ body::before {
   margin-top: 0.25rem;
 }
 
-/* Confirmation Dialog Styles */
+/* ===================================
+   Modal & Dialog Styles
+   =================================== */
 .confirmation-dialog-open {
   overflow: hidden !important;
   padding-right: 0 !important;
@@ -450,7 +603,6 @@ body::before {
   transition: opacity 300ms ease-out !important;
 }
 
-/* Enhanced modal styles */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -481,67 +633,66 @@ body::before {
   transition: all 0.3s ease;
 }
 
-/* Ensure Tailwind utilities work consistently */
-.from-red-500 {
-  background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+/* ===================================
+   PrimeNG Customizations
+   =================================== */
+.p-button-danger {
+  background: var(--gradient-primary) !important;
   border: none !important;
-  color: white !important;
-  font-weight: 600 !important;
-  padding: 0.75rem 1rem !important;
-  border-radius: 0.375rem !important;
-  transition: all 0.3s ease !important;
 }
 
-.from-red-500:hover:not(:disabled) {
-  background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4) !important;
+.p-button-danger:hover {
+  background: var(--gradient-hover) !important;
 }
 
-/* Force important for critical Tailwind classes */
-.bg-red-500 {
-  background-color: #ef4444 !important;
+/* RTL Support for PrimeNG */
+.p-component {
+  direction: rtl;
 }
 
-.bg-red-600 {
-  background-color: #dc2626 !important;
+/* ===================================
+   Utility Classes
+   =================================== */
+.bg-primary {
+  background: var(--gradient-primary);
 }
 
-.bg-red-700 {
-  background-color: #b91c1c !important;
+.bg-primary-light {
+  background: var(--primary-50);
 }
 
-.text-white {
-  color: white !important;
+.text-primary {
+  color: var(--primary-600);
 }
 
-.text-red-600 {
-  color: #dc2626 !important;
+.text-primary-dark {
+  color: var(--primary-700);
 }
 
-.border-red-200 {
-  border-color: #fecaca !important;
+.shadow-custom {
+  box-shadow: var(--shadow-md);
 }
 
-/* Ensure gradient backgrounds work */
-.bg-gradient-to-r {
-  background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important;
+.shadow-custom-lg {
+  box-shadow: var(--shadow-lg);
 }
 
-.from-red-500 {
-  --tw-gradient-from: #ef4444 !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(239, 68, 68, 0)) !important;
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
 }
 
-.to-red-700 {
-  --tw-gradient-to: #b91c1c !important;
+.shadow-glow-lg {
+  box-shadow: var(--shadow-glow-lg);
 }
 
-.from-red-600 {
-  --tw-gradient-from: #dc2626 !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(220, 38, 38, 0)) !important;
+.rounded-custom {
+  border-radius: 0.5rem;
 }
 
-.to-red-800 {
-  --tw-gradient-to: #991b1b !important;
+.rounded-custom-lg {
+  border-radius: 0.75rem;
+}
+
+.rounded-custom-xl {
+  border-radius: 1rem;
 }

@@ -6,11 +6,12 @@ import { ProductService } from '../../services/product.service';
 import { CartService } from '../../services/cart.service';
 import { WishlistService } from '../../services/wishlist.service';
 import { Product } from '../../models/product.model';
+import { ProductCardComponent } from '../../components/product-card/product-card.component';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ProductCardComponent],
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.scss']
 })
@@ -26,6 +27,87 @@ export class ProductDetailsComponent implements OnInit {
   // Related products
   relatedProducts: Product[] = [];
   isLoadingRelatedProducts: boolean = false;
+
+  private readonly dummyProducts: Product[] = [
+    {
+      _id: 'dummy-1',
+      name: 'منظف متعدد الاستخدام',
+      description: 'منظف مركز آمن على جميع الأسطح، يزيل أصعب البقع ويترك رائحة منعشة تدوم طويلًا.',
+      price: 120,
+      originalPrice: 150,
+      priceAfterDiscount: 120,
+      discount: 30,
+      rating: 4.7,
+      reviews: 128,
+      stock: 35,
+      image: 'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=900&q=80',
+      images: [
+        'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=900&q=80',
+        'https://images.unsplash.com/photo-1514995669114-6081e934b693?auto=format&fit=crop&w=900&q=80'
+      ],
+      brand: 'الفتح',
+      category: 'منظفات منزلية',
+      subCategory: 'متعدد الاستخدام',
+      specifications: {
+        'الحجم': '1 لتر',
+        'بلد المنشأ': 'مصر',
+        'التركيبة': 'خالية من المواد القاسية',
+        'الاستعمال': 'أسطح المطبخ، الأجهزة، الأرضيات'
+      }
+    },
+    {
+      _id: 'dummy-2',
+      name: 'سائل غسل الصحون المركز',
+      description: 'تركيبة مركزة بفيتامين E لنعومة اليدين ولمعان الأواني مع رغوة وفيرة وسهولة في الشطف.',
+      price: 70,
+      originalPrice: 90,
+      priceAfterDiscount: 70,
+      discount: 20,
+      rating: 4.6,
+      reviews: 94,
+      stock: 50,
+      image: 'https://images.unsplash.com/photo-1615485290382-31f1050aeed7?auto=format&fit=crop&w=900&q=80',
+      images: [
+        'https://images.unsplash.com/photo-1615485290382-31f1050aeed7?auto=format&fit=crop&w=900&q=80',
+        'https://images.unsplash.com/photo-1609947017136-69df02c9a5a7?auto=format&fit=crop&w=900&q=80'
+      ],
+      brand: 'Sparkle',
+      category: 'منظفات المطبخ',
+      subCategory: 'غسول الصحون',
+      productType: 'specialOffer',
+      specifications: {
+        'الحجم': '750 مل',
+        'العطر': 'حمضيات طازجة',
+        'مناسب ل': 'الأواني، الأكواب، أدوات المائدة',
+        'مزايا إضافية': 'صديق للبشرة، سريع الشطف'
+      }
+    },
+    {
+      _id: 'dummy-3',
+      name: 'مطهر ومعقم أرضيات 2 لتر',
+      description: 'مطهر بتركيبة فعالة يقتل 99.9% من الجراثيم ويترك عطراً مميزاً يدوم لساعات طويلة.',
+      price: 95,
+      originalPrice: 95,
+      rating: 4.8,
+      reviews: 203,
+      stock: 20,
+      image: 'https://images.unsplash.com/photo-1504548840739-580b10ae7715?auto=format&fit=crop&w=900&q=80',
+      images: [
+        'https://images.unsplash.com/photo-1504548840739-580b10ae7715?auto=format&fit=crop&w=900&q=80',
+        'https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?auto=format&fit=crop&w=900&q=80'
+      ],
+      brand: 'Pure Home',
+      category: 'منظفات منزلية',
+      subCategory: 'مطهرات الأرضيات',
+      productType: 'bestSeller',
+      specifications: {
+        'الحجم': '2 لتر',
+        'العطر': 'لافندر',
+        'مدة الحماية': 'حتى 24 ساعة',
+        'نسبة التعقيم': '99.9%'
+      }
+    }
+  ];
   
   // Slider reference
   @ViewChild('relatedProductsSlider') relatedProductsSlider!: ElementRef;
@@ -49,40 +131,54 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   loadProduct(productId: string | number): void {
-    this.productService.getProductById(productId).subscribe(product => {
-      this.product = product;
-      if (product && product.images && product.images.length > 0) {
-        this.selectedImage = product?.images[0];
-      }
-      
-      console.log('Loaded product:', product);
-      console.log('Product subcategory:', product?.subCategory);
-      
-      // Load related products - try multiple approaches
+    if (typeof productId === 'string' && productId.startsWith('dummy')) {
+      const product = this.dummyProducts.find(item => item._id === productId);
       if (product) {
-        // Try different subcategory fields
-        const subcategoryId = product.subCategory || 
-                             product.subcategory?._id || 
-                             product.subcategory || 
-                             product.category;
-        
-        console.log('Product fields:', {
-          subCategory: product.subCategory,
-          subcategory: product.subcategory,
-          category: product.category,
-          finalSubcategoryId: subcategoryId
-        });
-        
-        if (subcategoryId) {
-          console.log('Loading related products with subcategory:', subcategoryId);
-          this.loadRelatedProducts(subcategoryId, productId);
-        } else {
-          console.log('No subcategory found, loading all products as fallback');
-          // Load all products as fallback
-          this.loadAllProductsAsRelated(productId);
-        }
+        this.setupProductState(product, true);
       }
+      return;
+    }
+
+    this.productService.getProductById(productId).subscribe(product => {
+      this.setupProductState(product, false, productId);
     });
+  }
+
+  private setupProductState(product: Product | undefined, isDummy: boolean, productId?: string | number): void {
+    this.product = product;
+
+    if (this.product) {
+      if (!this.product.images || this.product.images.length === 0) {
+        const primaryImage = this.product.image || 'assets/images/placeholder.png';
+        this.product.images = [primaryImage];
+      }
+
+      this.selectedImage = this.product.images?.[0] || this.product.image || '';
+      this.lightboxImage = this.selectedImage;
+      this.quantity = 1;
+
+      if (isDummy) {
+        const related = this.dummyProducts.filter(item => item._id !== this.product?._id);
+        this.relatedProducts = related.slice(0, 4);
+        this.isLoadingRelatedProducts = false;
+        return;
+      }
+
+      if (!productId) {
+        productId = this.product._id || this.product.id || '';
+      }
+
+      const subcategoryId = this.product.subCategory || 
+                           this.product.subcategory?._id || 
+                           this.product.subcategory || 
+                           this.product.category;
+
+      if (subcategoryId) {
+        this.loadRelatedProducts(subcategoryId as string, productId);
+      } else {
+        this.loadAllProductsAsRelated(productId);
+      }
+    }
   }
 
   loadRelatedProducts(subcategoryId: string, currentProductId: string | number): void {

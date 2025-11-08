@@ -66,6 +66,77 @@ export class AllProductsComponent implements OnInit, OnDestroy {
   isSideNavOpen = false;
   
   private destroy$ = new Subject<void>();
+  private readonly fallbackProductsData: Product[] = [
+    {
+      _id: 'dummy-1',
+      name: 'منظف متعدد الاستخدام',
+      description: 'منظف مركز آمن على جميع الأسطح، يزيل أصعب البقع ويترك رائحة منعشة.',
+      price: 120,
+      originalPrice: 150,
+      priceAfterDiscount: 120,
+      discount: 30,
+      rating: 4.7,
+      reviews: 128,
+      stock: 35,
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80',
+      brand: 'الفتح',
+      category: 'منظفات منزلية',
+      subCategory: 'متعدد الاستخدام',
+      productType: 'featured',
+      featured: true
+    },
+    {
+      _id: 'dummy-2',
+      name: 'سائل غسل الصحون المركز',
+      description: 'تركيبة مركزة بفيتامين E لنعومة اليدين ولمعان الأواني مع رغوة وفيرة وسهولة في الشطف.',
+      price: 75,
+      originalPrice: 90,
+      priceAfterDiscount: 70,
+      discount: 20,
+      rating: 4.6,
+      reviews: 94,
+      stock: 50,
+      image: 'https://images.unsplash.com/photo-1615485290382-31f1050aeed7?auto=format&fit=crop&w=900&q=80',
+      brand: 'Sparkle',
+      category: 'منظفات المطبخ',
+      subCategory: 'غسول الصحون',
+      productType: 'specialOffer',
+      specialOffer: true
+    },
+    {
+      _id: 'dummy-3',
+      name: 'مطهر ومعقم أرضيات 2 لتر',
+      description: 'مطهر بتركيبة فعالة يقتل 99.9% من الجراثيم ويترك عطراً مميزاً يدوم لساعات طويلة.',
+      price: 95,
+      originalPrice: 95,
+      rating: 4.8,
+      reviews: 203,
+      stock: 20,
+      image: 'https://images.unsplash.com/photo-1504548840739-580b10ae7715?auto=format&fit=crop&w=900&q=80',
+      brand: 'Pure Home',
+      category: 'منظفات منزلية',
+      subCategory: 'مطهرات الأرضيات',
+      productType: 'bestSeller',
+      bestSeller: true
+    },
+    {
+      _id: 'dummy-4',
+      name: 'ملمع الزجاج والأسطح',
+      description: 'بعطر اللافندر، يترك الزجاج خالياً من الخطوط ويوفر حماية من إعادة التصاق الأتربة.',
+      price: 60,
+      originalPrice: 70,
+      priceAfterDiscount: 60,
+      discount: 10,
+      rating: 4.5,
+      reviews: 65,
+      stock: 40,
+      image: 'https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=900&q=80',
+      brand: 'Crystal',
+      category: 'منظفات النوافذ',
+      subCategory: 'ملمع الزجاج',
+      productType: 'normal'
+    }
+  ];
 
   constructor(
     private productService: ProductService,
@@ -231,9 +302,7 @@ export class AllProductsComponent implements OnInit, OnDestroy {
               this.totalItems = response.data.length;
               this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
             } else {
-              this.products = [];
-              this.totalItems = 0;
-              this.totalPages = 0;
+              this.useFallbackProducts();
             }
             
             // Set filtered products to the same as products since we're doing server-side filtering
@@ -241,22 +310,15 @@ export class AllProductsComponent implements OnInit, OnDestroy {
             console.log('Products loaded:', this.products.length);
             console.log('Total items:', this.totalItems);
           } else {
-            this.error = 'حدث خطأ في تحميل المنتجات';
-            this.products = [];
-            this.totalItems = 0;
-            this.totalPages = 0;
+            this.useFallbackProducts();
           }
           this.loading = false;
         },
         error: (err) => {
           console.error('Error loading products:', err);
           console.error('Query string that failed:', queryString);
-          this.error = 'حدث خطأ في تحميل المنتجات';
+          this.useFallbackProducts();
           this.loading = false;
-          this.products = [];
-          this.filteredProducts = [];
-          this.totalItems = 0;
-          this.totalPages = 0;
         }
       });
   }
@@ -525,5 +587,15 @@ export class AllProductsComponent implements OnInit, OnDestroy {
     }
     
     return pages;
+  }
+
+  private useFallbackProducts(): void {
+    this.error = '';
+    this.products = [...this.fallbackProductsData];
+    this.filteredProducts = [...this.fallbackProductsData];
+    this.totalItems = this.filteredProducts.length;
+    this.itemsPerPage = 12;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    this.currentPage = 1;
   }
 }

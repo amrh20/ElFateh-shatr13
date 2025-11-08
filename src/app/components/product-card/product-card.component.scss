@@ -1,5 +1,5 @@
 // ===================================
-// 🎴 Compact Product Card - Minimal & Elegant
+// 🎴 Modern Product Card - Clean & Always Visible
 // ===================================
 
 .product-card-compact {
@@ -13,64 +13,33 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     border: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 
     &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 32px rgba(220, 38, 38, 0.15);
-      border-color: rgba(220, 38, 38, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(220, 38, 38, 0.12);
+      border-color: rgba(220, 38, 38, 0.2);
 
-      // Image zoom on hover
+      // Subtle image zoom on hover
       .product-image {
-        transform: scale(1.1);
-      }
-
-      // Show overlay on hover
-      .hover-overlay {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      // Show icon actions on hover
-      .icon-actions {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      // Show bottom info on hover
-      .bottom-info {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      // Show description in info section
-      .info-description {
-        max-height: 60px;
-        opacity: 1;
-        margin-top: 8px;
-        margin-bottom: 8px;
-      }
-
-      // Show add to cart button in info section
-      .btn-add-cart-info {
-        max-height: 50px;
-        opacity: 1;
-        padding: 12px 20px;
-        margin-top: 8px;
+        transform: scale(1.05);
       }
     }
   }
 }
 
 // ===================================
-// 📸 Image Section (Compact)
+// 📸 Image Section - Always Show Actions
 // ===================================
 
 .image-section {
   position: relative;
   width: 100%;
-  height: 240px;
+  height: 260px;
   overflow: hidden;
   background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
 
@@ -84,13 +53,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-    width: 200px;
-    text-align: center;
-    margin: 0 auto;
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  // Mini Discount Badge (Top Right)
+  // Discount Badge (Top Right) - Always Visible
   .discount-badge-mini {
     position: absolute;
     top: 12px;
@@ -104,20 +70,15 @@
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
     z-index: 10;
     animation: badgePulse 2s ease-in-out infinite;
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: scale(1.1);
-    }
   }
 
-  // Mini Wishlist Button (Top Left)
+  // Wishlist Button (Top Left) - Always Visible
   .wishlist-btn-mini {
     position: absolute;
     top: 12px;
     left: 12px;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,8 +92,8 @@
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 
     .heart-icon {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       color: #9ca3af;
       transition: all 0.3s ease;
 
@@ -157,73 +118,127 @@
       box-shadow: 0 2px 10px rgba(220, 38, 38, 0.25);
     }
   }
+}
 
-  // Hover Overlay (Hidden by default on desktop, visible on mobile)
-  .hover-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 40%,
-      rgba(0, 0, 0, 0.8) 100%
-    );
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 16px 16px;
-    z-index: 5;
-  }
+// ===================================
+// 📝 Info Section - Everything Always Visible
+// ===================================
 
-  // Icon Actions (Centered in middle)
-  .icon-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: center;
-    margin-top: auto;
-    margin-bottom: auto;
-    transform: translateY(10px);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1) 0.1s;
-  }
+.info-section {
+  padding: 16px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
 
-  // Bottom Info (Description + Add to Cart)
-  .bottom-info {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1) 0.15s;
-  }
-
-  .hover-description {
-    color: white;
-    font-size: 13px;
-    line-height: 1.5;
-    text-align: center;
+  .product-title-compact {
     margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    min-height: 45px;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #dc2626;
+      }
+    }
   }
 
-  .btn-add-to-cart {
+  // Compact Price - Always Visible
+  .price-compact {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .current-price {
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+
+      .value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #dc2626;
+        line-height: 1;
+      }
+
+      .currency {
+        font-size: 13px;
+        font-weight: 600;
+        color: #dc2626;
+      }
+    }
+
+    .original-price {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      text-decoration: line-through;
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 500;
+
+      .currency {
+        font-size: 11px;
+      }
+    }
+  }
+
+  // Compact Brand - Always Visible
+  .brand-compact {
+    display: inline-flex;
+    align-self: flex-start;
+    padding: 5px 12px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+  }
+
+  // Description - Always Visible
+  .info-description {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #6b7280;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    // Always visible
+    opacity: 1;
+  }
+
+  // Add to Cart Button - Always Visible
+  .btn-add-cart-info {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 12px 20px;
+    margin-top: auto;
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
     color: white;
     border: none;
@@ -233,6 +248,8 @@
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    // Always visible
+    opacity: 1;
 
     svg {
       width: 20px;
@@ -250,261 +267,8 @@
     }
 
     &.disabled {
-      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+      background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
       cursor: not-allowed;
-      opacity: 0.6;
-
-      &:hover {
-        transform: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      }
-    }
-  }
-
-  // Icon Button Style
-  .icon-btn {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.95);
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
-    color: #1f2937;
-
-    svg {
-      width: 24px;
-      height: 24px;
-      stroke-width: 2;
-      transition: all 0.3s ease;
-    }
-
-    &:hover {
-      background: #dc2626;
-      transform: translateY(-4px) scale(1.1);
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
-
-      svg {
-        color: white;
-        stroke: white;
-        transform: scale(1.15);
-      }
-    }
-
-    &:active {
-      transform: translateY(-2px) scale(1.05);
-    }
-
-    // Filled heart for wishlist
-    svg.filled {
-      fill: #dc2626;
-      color: #dc2626;
-    }
-
-    &.active {
-      background: rgba(254, 242, 242, 0.95);
-
-      svg {
-        color: #dc2626;
-      }
-    }
-
-    &.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      background: rgba(156, 163, 175, 0.3);
-
-      &:hover {
-        transform: none;
-        background: rgba(156, 163, 175, 0.3);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-        svg {
-          color: #1f2937;
-          stroke: #1f2937;
-          transform: none;
-        }
-      }
-    }
-  }
-
-  // Animation for each icon button (stagger effect)
-  .icon-actions .icon-btn:nth-child(1) {
-    animation: iconSlideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) backwards;
-    animation-delay: 0.1s;
-  }
-
-  .icon-actions .icon-btn:nth-child(2) {
-    animation: iconSlideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) backwards;
-    animation-delay: 0.15s;
-  }
-
-  .icon-actions .icon-btn:nth-child(3) {
-    animation: iconSlideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) backwards;
-    animation-delay: 0.2s;
-  }
-
-  .card-wrapper:hover .icon-actions .icon-btn {
-    animation: iconSlideIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-  }
-}
-
-// ===================================
-// 📝 Info Section (Compact - Always Visible)
-// ===================================
-
-.info-section {
-  padding: 16px;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  .product-title-compact {
-    margin: 0;
-    font-size: 15px;
-    font-weight: 700;
-    color: #1f2937;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-height: 42px;
-    max-height: 42px;
-
-    a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.3s ease;
-
-      &:hover {
-        color: #dc2626;
-      }
-    }
-  }
-
-  // Compact Price
-  .price-compact {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-
-    .current-price {
-      display: flex;
-      align-items: baseline;
-      gap: 3px;
-
-      .value {
-        font-size: 20px;
-        font-weight: 800;
-        color: #dc2626;
-        line-height: 1;
-      }
-
-      .currency {
-        font-size: 12px;
-        font-weight: 600;
-        color: #dc2626;
-      }
-    }
-
-    .original-price {
-      display: flex;
-      align-items: baseline;
-      gap: 2px;
-      text-decoration: line-through;
-      color: #9ca3af;
-      font-size: 13px;
-      font-weight: 500;
-
-      .currency {
-        font-size: 10px;
-      }
-    }
-  }
-
-  // Compact Brand
-  .brand-compact {
-    display: inline-flex;
-    align-self: flex-start;
-    padding: 4px 10px;
-    background: #f3f4f6;
-    color: #6b7280;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: #e5e7eb;
-      color: #4b5563;
-    }
-  }
-
-  // Description (Hidden by default, visible on hover on desktop)
-  .info-description {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #6b7280;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 0;
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  // Add to Cart Button in Info Section (Hidden by default, visible on hover on desktop)
-  .btn-add-cart-info {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    &:hover {
-      background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(220, 38, 38, 0.5);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    &.disabled {
-      background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
-      cursor: not-allowed;
-      opacity: 0.6;
 
       &:hover {
         transform: none;
@@ -573,38 +337,81 @@
 @media (max-width: 768px) {
   .product-card-compact {
     .image-section {
-      height: 200px;
+      height: 220px;
 
-      // Always show overlay on mobile
-      .hover-overlay {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      // Always show icon actions on mobile
-      .icon-actions {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      // Always show bottom info on mobile
-      .bottom-info {
-        transform: translateY(0);
-        opacity: 1;
-      }
-
-      .hover-description {
+      .discount-badge-mini {
+        top: 8px;
+        right: 8px;
+        padding: 5px 10px;
         font-size: 12px;
-        -webkit-line-clamp: 2;
       }
 
-      .btn-add-to-cart {
-        padding: 10px 16px;
-        font-size: 13px;
+      .wishlist-btn-mini {
+        top: 8px;
+        left: 8px;
+        width: 36px;
+        height: 36px;
+
+        .heart-icon {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+
+    .info-section {
+      padding: 14px;
+      gap: 8px;
+
+      .product-title-compact {
+        font-size: 14px;
+        min-height: 42px;
+      }
+
+      .price-compact {
+        .current-price .value {
+          font-size: 20px;
+        }
+
+        .original-price {
+          font-size: 13px;
+        }
+      }
+
+      .brand-compact {
+        font-size: 11px;
+        padding: 4px 10px;
+      }
+
+      .info-description {
+        font-size: 12px;
+      }
+
+      .btn-add-cart-info {
+        padding: 11px 18px;
+        font-size: 14px;
 
         svg {
           width: 18px;
           height: 18px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-compact {
+    .image-section {
+      height: 200px;
+
+      .wishlist-btn-mini {
+        width: 32px;
+        height: 32px;
+
+        .heart-icon {
+          width: 16px;
+          height: 16px;
         }
       }
     }
@@ -613,9 +420,8 @@
       padding: 12px;
 
       .product-title-compact {
-        font-size: 14px;
-        min-height: 38px;
-        max-height: 38px;
+        font-size: 13px;
+        min-height: 40px;
       }
 
       .price-compact {
@@ -628,132 +434,17 @@
         }
       }
 
-      // Always show description on mobile
       .info-description {
-        max-height: 60px;
-        opacity: 1;
-        margin-top: 8px;
-        margin-bottom: 8px;
-        font-size: 12px;
-        -webkit-line-clamp: 2;
+        font-size: 11px;
       }
 
-      // Always show button on mobile
       .btn-add-cart-info {
-        max-height: 50px;
-        opacity: 1;
         padding: 10px 16px;
-        margin-top: 8px;
         font-size: 13px;
 
         svg {
           width: 16px;
           height: 16px;
-        }
-      }
-    }
-
-    .discount-badge-mini {
-      top: 8px;
-      right: 8px;
-      padding: 5px 10px;
-      font-size: 12px;
-    }
-
-    .wishlist-btn-mini {
-      top: 8px;
-      left: 8px;
-      width: 32px;
-      height: 32px;
-
-      .heart-icon {
-        width: 16px;
-        height: 16px;
-      }
-    }
-
-    .icon-actions {
-      gap: 10px;
-
-      .icon-btn {
-        width: 44px;
-        height: 44px;
-
-        svg {
-          width: 20px;
-          height: 20px;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .product-card-compact {
-    .image-section {
-      height: 180px;
-
-      .hover-description {
-        font-size: 11px;
-        -webkit-line-clamp: 1;
-      }
-
-      .btn-add-to-cart {
-        padding: 8px 12px;
-        font-size: 12px;
-
-        svg {
-          width: 16px;
-          height: 16px;
-        }
-      }
-    }
-
-    .info-section {
-      padding: 10px;
-
-      .product-title-compact {
-        font-size: 13px;
-        min-height: 36px;
-        max-height: 36px;
-      }
-
-      .price-compact {
-        .current-price .value {
-          font-size: 16px;
-        }
-      }
-
-      // Mobile description
-      .info-description {
-        font-size: 11px;
-        -webkit-line-clamp: 2;
-        max-height: 50px;
-      }
-
-      // Mobile button
-      .btn-add-cart-info {
-        padding: 8px 12px;
-        font-size: 12px;
-        max-height: 45px;
-
-        svg {
-          width: 14px;
-          height: 14px;
-        }
-      }
-    }
-
-    .icon-actions {
-      gap: 8px;
-
-      .icon-btn {
-        width: 40px;
-        height: 40px;
-
-        svg {
-          width: 18px;
-          height: 18px;
         }
       }
     }
@@ -820,3 +511,4 @@
     transition-duration: 0.01ms !important;
   }
 }
+

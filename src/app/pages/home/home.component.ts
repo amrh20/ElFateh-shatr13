@@ -35,6 +35,122 @@ export class HomeComponent implements OnInit {
   cartSize = 0;
   wishlistSize = 0;
 
+  private readonly fallbackCategories: Category[] = [
+    {
+      _id: 'fc-1',
+      name: 'منظفات منزلية',
+      description: 'مجموعة متكاملة لتنظيف المنزل بروائح منعشة',
+      image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80',
+      isActive: true,
+      parent: null,
+      ancestors: [],
+      subcategories: []
+    },
+    {
+      _id: 'fc-2',
+      name: 'أدوات مطبخ',
+      description: 'أفضل الأدوات والإكسسوارات لمطبخك',
+      image: 'https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=900&q=80',
+      isActive: true,
+      parent: null,
+      ancestors: [],
+      subcategories: []
+    },
+    {
+      _id: 'fc-3',
+      name: 'العناية الشخصية',
+      description: 'منتجات مميزة للعناية اليومية بك وبعائلتك',
+      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=900&q=80',
+      isActive: true,
+      parent: null,
+      ancestors: [],
+      subcategories: []
+    }
+  ];
+
+  private readonly fallbackProducts: Product[] = [
+    {
+      _id: 'fp-1',
+      name: 'منظف أرضيات برائحة اللافندر',
+      description: 'تركيبة فعالة تنظف وتترك عطراً مميزاً يدوم طويلاً',
+      price: 95,
+      originalPrice: 120,
+      priceAfterDiscount: 95,
+      image: 'https://images.unsplash.com/photo-1504548840739-580b10ae7715?auto=format&fit=crop&w=900&q=80',
+      images: ['https://images.unsplash.com/photo-1504548840739-580b10ae7715?auto=format&fit=crop&w=900&q=80'],
+      category: 'منظفات منزلية',
+      subCategory: 'منظفات الأرضيات',
+      stock: 40,
+      rating: 4.8,
+      reviews: 215
+    },
+    {
+      _id: 'fp-2',
+      name: 'سائل غسل الصحون مركز',
+      description: 'رغوة غنية، سهل الشطف، لطيف على اليدين',
+      price: 70,
+      originalPrice: 85,
+      priceAfterDiscount: 70,
+      image: 'https://images.unsplash.com/photo-1615485290382-31f1050aeed7?auto=format&fit=crop&w=900&q=80',
+      images: ['https://images.unsplash.com/photo-1615485290382-31f1050aeed7?auto=format&fit=crop&w=900&q=80'],
+      category: 'منظفات منزلية',
+      subCategory: 'منظفات المطبخ',
+      stock: 60,
+      rating: 4.6,
+      reviews: 142
+    },
+    {
+      _id: 'fp-3',
+      name: 'طقم أواني مطبخ استلس 10 قطع',
+      description: 'جودة ممتازة ومتانة عالية للاستخدام اليومي',
+      price: 480,
+      image: 'https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=900&q=80',
+      images: ['https://images.unsplash.com/photo-1528712306091-ed0763094c98?auto=format&fit=crop&w=900&q=80'],
+      category: 'أدوات مطبخ',
+      subCategory: 'أدوات المطبخ',
+      stock: 20,
+      rating: 4.9,
+      reviews: 98
+    },
+    {
+      _id: 'fp-4',
+      name: 'منظم حمام متعدد الأرفف',
+      description: 'تصميم أنيق لتخزين أدوات الحمام بشكل منظم',
+      price: 190,
+      originalPrice: 220,
+      priceAfterDiscount: 190,
+      image: 'https://images.unsplash.com/photo-1604014237415-3cf0ee1157e8?auto=format&fit=crop&w=900&q=80',
+      images: ['https://images.unsplash.com/photo-1604014237415-3cf0ee1157e8?auto=format&fit=crop&w=900&q=80'],
+      category: 'أدوات منزلية',
+      subCategory: 'أدوات الحمام',
+      stock: 35,
+      rating: 4.5,
+      reviews: 77
+    }
+  ];
+
+  private readonly fallbackOrder: Order = {
+    id: 'ORD-2025-1001',
+    userId: 1,
+    items: [
+      {
+        product: this.fallbackProducts[0],
+        quantity: 2
+      },
+      {
+        product: this.fallbackProducts[2],
+        quantity: 1
+      }
+    ],
+    totalAmount: 670,
+    status: 'confirmed',
+    orderDate: new Date(),
+    deliveryDate: undefined,
+    deliveryAddress: 'المعادى، القاهرة',
+    paymentMethod: 'cash',
+    trackingNumber: 'TRK-102938'
+  };
+
   constructor(
     private productService: ProductService,
     public orderService: OrderService,
@@ -65,11 +181,12 @@ export class HomeComponent implements OnInit {
   loadCategories(): void {
     this.productService.getCategories().subscribe({
       next: (categories) => {
-        this.categories = categories;
+        this.categories = this.prepareCategories(categories && categories.length ? categories : this.fallbackCategories);
       },
       error: (error) => {
         console.error('Error loading categories:', error);
-        this.notificationService.error('خطأ', 'فشل في تحميل الأصناف');
+        this.categories = this.prepareCategories(this.fallbackCategories);
+        this.notificationService.error('خطأ', 'فشل في تحميل الأصناف، تم عرض بيانات تجريبية');
       }
     });
   }
@@ -78,11 +195,12 @@ export class HomeComponent implements OnInit {
     this.productService.getFeaturedProductsFromAPI().subscribe({
       next: (products) => {
         console.log('Featured products:', products);
-        this.featuredProducts = products;
+        this.featuredProducts = this.prepareProducts(products && products.length ? products : this.fallbackProducts);
       },
       error: (error) => {
         console.error('Error loading featured products:', error);
-        this.notificationService.error('خطأ', 'فشل في تحميل المنتجات المميزة');
+        this.featuredProducts = this.prepareProducts(this.fallbackProducts);
+        this.notificationService.error('خطأ', 'فشل في تحميل المنتجات المميزة، تم عرض بيانات تجريبية');
       }
     });
   }
@@ -90,11 +208,12 @@ export class HomeComponent implements OnInit {
   loadBestSellers(): void {
     this.productService.getBestSellersFromAPI().subscribe({
       next: (products) => {
-        this.bestSellers = products;
+        this.bestSellers = this.prepareProducts(products && products.length ? products : this.fallbackProducts);
       },
       error: (error) => {
         console.error('Error loading best sellers:', error);
-        this.notificationService.error('خطأ', 'فشل في تحميل الأكثر مبيعاً');
+        this.bestSellers = this.prepareProducts(this.fallbackProducts);
+        this.notificationService.error('خطأ', 'فشل في تحميل الأكثر مبيعاً، تم عرض بيانات تجريبية');
       }
     });
   }
@@ -102,11 +221,12 @@ export class HomeComponent implements OnInit {
   loadOnSaleProducts(): void {
     this.productService.getSpecialOfferProductsFromAPI().subscribe({
       next: (products) => {
-        this.onSaleProducts = products;
+        this.onSaleProducts = this.prepareProducts(products && products.length ? products : this.fallbackProducts);
       },
       error: (error) => {
         console.error('Error loading special offer products:', error);
-        this.notificationService.error('خطأ', 'فشل في تحميل العروض الخاصة');
+        this.onSaleProducts = this.prepareProducts(this.fallbackProducts);
+        this.notificationService.error('خطأ', 'فشل في تحميل العروض الخاصة، تم عرض بيانات تجريبية');
       }
     });
   }
@@ -161,7 +281,7 @@ export class HomeComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading current order:', error);
-        this.currentOrder = null;
+        this.currentOrder = this.fallbackOrder;
       }
     });
   }
@@ -276,27 +396,24 @@ export class HomeComponent implements OnInit {
 
   // Helper method to clean image URLs from API response
   getCleanImageUrl(imageUrl: string): string {
-    if (!imageUrl) return '';
-    
-    // Remove data-src wrapper if exists
-    if (imageUrl.includes('data-src=')) {
-      const match = imageUrl.match(/data-src="([^"]+)"/);
+    let cleaned = imageUrl || '';
+
+    if (cleaned.includes('data-src=')) {
+      const match = cleaned.match(/data-src="([^"]+)"/);
       if (match && match[1]) {
-        return match[1];
+        cleaned = match[1];
       }
     }
-    
-    // Remove extra quotes if exists
-    if (imageUrl.startsWith('"') && imageUrl.endsWith('"')) {
-      return imageUrl.slice(1, -1);
+
+    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      cleaned = cleaned.slice(1, -1);
     }
-    
-    // Remove escaped quotes if exists
-    if (imageUrl.includes('\\"')) {
-      return imageUrl.replace(/\\"/g, '');
+
+    if (cleaned.includes('\\"')) {
+      cleaned = cleaned.replace(/\\"/g, '');
     }
-    
-    return imageUrl;
+
+    return cleaned || 'assets/images/placeholder.png';
   }
 
   // Test API response structure
@@ -308,5 +425,36 @@ export class HomeComponent implements OnInit {
         console.error('API Test failed in home component:', error);
       }
     });
+  }
+
+  private prepareProducts(products: any[]): Product[] {
+    if (!Array.isArray(products)) {
+      return [];
+    }
+    return products.map(product => this.mapProduct(product));
+  }
+
+  private prepareCategories(categories: any[]): Category[] {
+    if (!Array.isArray(categories)) {
+      return [];
+    }
+    return categories.map(category => ({
+      ...category,
+      image: this.getCleanImageUrl(category?.image || ''),
+      subcategories: category?.subcategories || []
+    }));
+  }
+
+  private mapProduct(product: any): Product {
+    const fallbackImage = this.getCleanImageUrl(product?.image || (Array.isArray(product?.images) ? product.images[0] : ''));
+    const images = Array.isArray(product?.images) && product.images.length
+      ? product.images.map((img: string) => this.getCleanImageUrl(img))
+      : [fallbackImage];
+
+    return {
+      ...product,
+      image: fallbackImage,
+      images
+    } as Product;
   }
 }

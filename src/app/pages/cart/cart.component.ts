@@ -274,6 +274,10 @@ export class CartComponent implements OnInit {
     this.cartService.removeFromCart(productId);
   }
 
+  clearCart(): void {
+    this.cartService.clearCart();
+  }
+
   async submitOrder(): Promise<void> {
     if (this.checkoutForm.invalid) return;
 
